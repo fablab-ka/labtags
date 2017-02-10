@@ -49,7 +49,7 @@ class ScanLoopThread(threading.Thread):
 
         for tag in tags:
             if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
-                print("[ScanThread] discovered Tag" + tag.mac)
+                print("[ScanThread] discovered Tag " + tag.mac)
 
                 self.tagCache.append(tag)
 

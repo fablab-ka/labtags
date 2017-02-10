@@ -10,7 +10,7 @@ class Client:
         self.gateway_ip = gateway_ip
 
     def sendMessage(self, message):
-        print("[Client] sendMessage", message)
+        print("[Client] sendMessage" + str(message))
 
         url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
         print("[Client] GET " + url)

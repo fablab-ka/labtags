@@ -21,17 +21,27 @@ class WorkerThread(threading.Thread):
         pass # todo
 
     def handleMessageQueue(self):
+        newThreads = []
+
         self.queueLock.acquire()
         while not self.messageQueue.empty():
             message = self.messageQueue.get()
+
+            print("[WorkerThread] processing message " + str(message))
 
             if isinstance(message, DiscoverTagMessage):
                 self.blotClient.sendMessage(message)
             elif isinstance(message, ConnectToTagCommandMessage):
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
                 self.tagConnections.append(tagConnection)
+                newThreads.append(tagConnection)
             else:
                 print("[WorkerThread] Error: unknown message type " + str(message))
+
+        self.queueLock.release()
+
+        for newThread in newThreads:
+            newThread.start()
 
     def run(self):
         print("[WorkerThread] Worker loop start")
@@ -40,8 +50,6 @@ class WorkerThread(threading.Thread):
             self.pruneTagConnections()
 
             self.handleMessageQueue()
-
-            self.queueLock.release()
 
             time.sleep(0.3)
         print("[WorkerThread] Worker loop shutdown")
