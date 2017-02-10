@@ -9,6 +9,8 @@ class Message:
 
 class DiscoverTagMessage(Message):
     def __init__(self, tag):
+        Message.__init__(self)
+        
         self.tag = tag
         self.time = time.time()
 
