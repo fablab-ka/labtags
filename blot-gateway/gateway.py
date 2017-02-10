@@ -16,22 +16,37 @@ class ScanLoopThread(threading.Thread):
         self.messageQueue = messageQueue
         self.queueLock = queueLock
         self.scanner = TagScanner()
-        self.currentTagList = []
+        self.tagCache = []
+        self.rediscoverTimeout = 5
+
+    def pruneTagCache(self):
+        now = time.time()
+        for tag in self.tagCache[:]:
+            if (now - tag.discovered) > self.rediscoverTimeout:
+                self.tagCache.remove(tag)
+
+    def discoverTags(self):
+        tags = self.scanner.scan()
+
+        for tag in tags:
+            if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
+                print("[ScanThread] discovered Tag", tag.mac)
+                
+                self.tagCache.append(tag)
+
+                self.queueLock.acquire()
+                self.messageQueue.put(DiscoverTagMessage(tag))
+                self.queueLock.release()
 
     def run(self):
         print("[ScanThread] scan loop start")
 
         while True:
-            tags = self.scanner.scan()
+            self.pruneTagCache()
 
-            for tag in tags:
-                if not list_contains(self.currentTagList, lambda t: t.mac == tag.mac):
-                    print("[ScanThread] discovered Tag", tag.mac)
-                    self.currentTagList.append(tag)
+            self.discoverTags()
 
-                    self.queueLock.acquire()
-                    self.messageQueue.put(DiscoverTagMessage(tag))
-                    self.queueLock.release()
+            time.sleep(0.1)
 
         print("[ScanThread] scan loop shutdown")
 
@@ -51,13 +66,13 @@ class WorkerThread(threading.Thread):
         while True:
             self.queueLock.acquire()
             while not self.messageQueue.empty():
-                message = q.get()
+                message = self.messageQueue.get()
 
                 if isinstance(message, DiscoverTagMessage):
                     self.blotClient.sendMessage(message)
             self.queueLock.release()
 
-            time.sleep(300)
+            time.sleep(0.3)
         print("[WorkerThread] Worker loop shutdown")
 
 
