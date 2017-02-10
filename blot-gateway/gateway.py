@@ -44,7 +44,9 @@ class WorkerThread(threading.Thread):
                 print("[WorkerThread] Error: unknown message type " + str(message))
 
 
+        print("[WorkerThread] " + str(len(newThreads)) + " new threads being started")
         for newThread in newThreads:
+            newThread.daemon = True
             newThread.start()
 
     def run(self):
