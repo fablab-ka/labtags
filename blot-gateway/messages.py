@@ -1,5 +1,7 @@
 import time
 
+COMMAND_CONNECT_TAG = "CONNECT_TAG"
+
 class Message:
     def __init__(self):
         self.queryTemplate = "?action=%s&tag_mac=%s&gateway_mac=%s&gateway_ip=%s&time=%d"
@@ -22,3 +24,11 @@ class DiscoverTagMessage(Message):
             gateway_ip,
             self.time
         )
+
+class ConnectToTagCommandMessage(Message):
+    def __init__(self, mac):
+        Message.__init__(self)
+        self.mac = mac
+
+    def toUrlQuery(self, gateway_mac, gateway_ip):
+        raise "ERROR, CommandMessage can't be converted into url query"

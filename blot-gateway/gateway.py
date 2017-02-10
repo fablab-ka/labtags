@@ -4,10 +4,9 @@ import sys, threading, time
 from Queue import Queue
 from utils import list_contains
 from client import Client
-from messages import DiscoverTagMessage
+from messages import DiscoverTagMessage, ConnectToTagCommandMessage
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
-from httplistener import HttpListenerThread
 
 class WorkerThread(threading.Thread):
 
@@ -29,8 +28,8 @@ class WorkerThread(threading.Thread):
 
             if isinstance(message, DiscoverTagMessage):
                 self.blotClient.sendMessage(message)
-            elif isinstance(message, ConnectTagMessage):
-                tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.tag)
+            elif isinstance(message, ConnectToTagCommandMessage):
+                tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
                 self.tagConnections.append(tagConnection)
             else:
                 print("[WorkerThread] Error: unknown message type " str(message))
@@ -58,8 +57,7 @@ if __name__ == "__main__":
 
     threads = [
         ScanLoopThread(messageQueue, queueLock),
-        WorkerThread(messageQueue, queueLock, blotClient),
-        HttpListenerThread(messageQueue, queueLock, 8080)
+        WorkerThread(messageQueue, queueLock, blotClient)
     ]
 
     for thread in threads:
