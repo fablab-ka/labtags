@@ -19,6 +19,8 @@ class Client:
 
         if result and result.command:
             if result.command == COMMAND_CONNECT_TAG:
+                print("[Client] Received Connect Command for Tag '"+ result.mac + "'")
+                
                 self.queueLock.acquire()
                 self.messageQueue.put(ConnectToTagCommandMessage(result.mac))
                 self.queueLock.release()
