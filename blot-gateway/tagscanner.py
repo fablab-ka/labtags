@@ -3,6 +3,7 @@ from bluepy import btle
 
 from tag import Tag
 from utils import list_contains
+from messages import DiscoverTagMessage
 
 class TagScanner:
     def __init__(self):
