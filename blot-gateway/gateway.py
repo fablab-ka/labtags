@@ -24,8 +24,13 @@ class WorkerThread(threading.Thread):
         newThreads = []
 
         self.queueLock.acquire()
-        while not self.messageQueue.empty():
+        hasElements = self.messageQueue.empty()
+        self.queueLock.release()
+
+        while not hasElements:
+            self.queueLock.acquire()
             message = self.messageQueue.get()
+            self.queueLock.release()
 
             print("[WorkerThread] processing message " + str(message))
 
@@ -38,7 +43,6 @@ class WorkerThread(threading.Thread):
             else:
                 print("[WorkerThread] Error: unknown message type " + str(message))
 
-        self.queueLock.release()
 
         for newThread in newThreads:
             newThread.start()
