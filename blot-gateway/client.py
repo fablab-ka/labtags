@@ -17,12 +17,16 @@ class Client:
 
         result = res.json()
 
-        if result and result.has_key("command"):
-            if result["command"] == COMMAND_CONNECT_TAG:
-                print("[Client] Received Connect Command for Tag '" + result.mac + "'")
+        if not isinstance(result, list):
+            result = [result]
 
-                self.queueLock.acquire()
-                self.messageQueue.put(ConnectToTagCommandMessage(result.mac))
-                self.queueLock.release()
-            else:
-                print("[Client] unknown result command '" + result.command + "'")
+        for commandMessage in result:
+            if commandMessage and commandMessage.has_key("command"):
+                if commandMessage["command"] == COMMAND_CONNECT_TAG:
+                    print("[Client] Received Connect Command for Tag '" + commandMessage.mac + "'")
+
+                    self.queueLock.acquire()
+                    self.messageQueue.put(ConnectToTagCommandMessage(commandMessage.mac))
+                    self.queueLock.release()
+                else:
+                    print("[Client] unknown result command '" + commandMessage["command"] + "'")
