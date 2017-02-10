@@ -1,4 +1,4 @@
-import threading
+import threading, time
 from tag import Tag
 from bluepy import btle
 
