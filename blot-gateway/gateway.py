@@ -2,7 +2,6 @@
 
 import sys, threading, time
 from Queue import Queue
-from utils import list_contains
 from client import Client
 from messages import DiscoverTagMessage, ConnectToTagCommandMessage
 from tagconnection import TagConnectionThread

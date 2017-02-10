@@ -1,6 +1,8 @@
 import threading, time
-from tag import Tag
 from bluepy import btle
+
+from tag import Tag
+from utils import list_contains
 
 class TagScanner:
     def __init__(self):
