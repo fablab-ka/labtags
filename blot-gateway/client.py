@@ -17,8 +17,8 @@ class Client:
 
         result = res.json()
 
-        if result and result.command:
-            if result.command == COMMAND_CONNECT_TAG:
+        if result and result.has_key("command"):
+            if result["command"] == COMMAND_CONNECT_TAG:
                 print("[Client] Received Connect Command for Tag '" + result.mac + "'")
 
                 self.queueLock.acquire()
