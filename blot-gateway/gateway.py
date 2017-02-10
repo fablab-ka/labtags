@@ -26,7 +26,7 @@ class ScanLoopThread(threading.Thread):
 
             for tag in tags:
                 if not list_contains(self.currentTagList, lambda t: t.mac == tag.mac):
-                    currentTagList.append(tag)
+                    self.currentTagList.append(tag)
 
                     self.queueLock.acquire()
                     self.messageQueue.put(DiscoverTagMessage(tag))
@@ -38,7 +38,7 @@ class WorkerThread(threading.Thread):
 
     def __init__(self, messageQueue, queueLock, blotClient):
         threading.Thread.__init__(self)
-        
+
         self.messageQueue = messageQueue
         self.queueLock = queueLock
         self.scanner = TagScanner()
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     queueLock = threading.Lock()
     messageQueue = Queue()
-    blotClient = Client('http://google.com/') # todo
+    blotClient = Client('http://homeserver.spdns.org/biot.php')
 
     threads = [
         ScanLoopThread(messageQueue, queueLock),
