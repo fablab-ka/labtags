@@ -1,3 +1,4 @@
+import threading
 from bluepy import btle
 
 class TagConnectionThread(threading.Thread):
