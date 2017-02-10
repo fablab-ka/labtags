@@ -32,7 +32,7 @@ class WorkerThread(threading.Thread):
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
                 self.tagConnections.append(tagConnection)
             else:
-                print("[WorkerThread] Error: unknown message type " str(message))
+                print("[WorkerThread] Error: unknown message type " + str(message))
 
     def run(self):
         print("[WorkerThread] Worker loop start")
