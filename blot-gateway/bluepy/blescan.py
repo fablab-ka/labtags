@@ -72,8 +72,8 @@ class ScanPrint(btle.DefaultDelegate):
 
         if dev.rssi < self.opts.sensitivity:
             return
-          
-        print ('    Device (%s): %s (%s), %d dBm %s' % 
+
+        print ('    Device (%s): %s (%s), %d dBm %s' %
                   (status,
                    ANSI_WHITE + dev.addr + ANSI_OFF,
                    dev.addrType,
@@ -131,9 +131,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
