@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     queueLock = threading.Lock()
     messageQueue = Queue()
-    blotClient = Client('http://homeserver.spdns.org/blot.php', "b8:27:eb:0b:de:50", "192.168.1.88")
+    blotClient = Client(messageQueue, queueLock, 'http://homeserver.spdns.org/blot.php', "b8:27:eb:0b:de:50", "192.168.1.88")
 
     threads = [
         ScanLoopThread(messageQueue, queueLock),

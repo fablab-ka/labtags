@@ -1,8 +1,10 @@
-import requests, types
+import requests
 from messages import ConnectToTagCommandMessage, COMMAND_CONNECT_TAG
 
 class Client:
-    def __init__(self, serverUrl, gateway_mac, gateway_ip):
+    def __init__(self, messageQueue, queueLock, serverUrl, gateway_mac, gateway_ip):
+        self.messageQueue = messageQueue
+        self.queueLock = queueLock
         self.serverUrl = serverUrl
         self.gateway_mac = gateway_mac
         self.gateway_ip = gateway_ip
@@ -22,7 +24,7 @@ class Client:
 
         for commandMessage in result:
             if commandMessage and commandMessage.has_key("command"):
-                if not isinstance(commandMessage["command"], types.basestring):
+                if not isinstance(commandMessage["command"], basestring):
                     print("[Client] invalid message format '" + str(commandMessage["command"]) + "'")
                     continue
 
