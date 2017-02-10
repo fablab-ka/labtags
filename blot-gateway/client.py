@@ -9,4 +9,7 @@ class Client:
     def sendMessage(self, message):
         print("[Client] sendMessage", message)
 
-        requests.get(self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip))
+        url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
+        print("[Client] GET " + url)
+        res = requests.get(url)
+        print("[Client] Response: %s '%s'" % (res.status_code, res.text))
