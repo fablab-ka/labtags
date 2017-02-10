@@ -12,7 +12,7 @@ class DiscoverTagMessage(Message):
         self.tag = tag
         self.time = time.time()
 
-    def toUrlQuery(gateway_mac, gateway_ip):
+    def toUrlQuery(self, gateway_mac, gateway_ip):
         return self.queryTemplate % (
             "TAG_DISCOVERED",
             self.tag.mac,
