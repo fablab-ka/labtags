@@ -1,4 +1,4 @@
-import requests
+import requests, types
 from messages import ConnectToTagCommandMessage, COMMAND_CONNECT_TAG
 
 class Client:
@@ -22,15 +22,19 @@ class Client:
 
         for commandMessage in result:
             if commandMessage and commandMessage.has_key("command"):
-                if not isinstance(commandMessage["command"], string):
-                    print("invalid message format")
+                if not isinstance(commandMessage["command"], types.basestring):
+                    print("[Client] invalid message format '" + str(commandMessage["command"]) + "'")
                     continue
 
                 if commandMessage["command"] == COMMAND_CONNECT_TAG:
-                    print("[Client] Received Connect Command for Tag '" + commandMessage.tag_mac + "'")
+                    print("[Client] Received Connect Command for Tag '" + str(commandMessage["tag_mac"]) + "'")
+
+                    if not isinstance(commandMessage["tag_mac"], basestring):
+                        print("invalid message format expected string for mac, got '" + str(commandMessage["tag_mac"]) + "'")
+                        continue
 
                     self.queueLock.acquire()
-                    self.messageQueue.put(ConnectToTagCommandMessage(commandMessage.tag_mac))
+                    self.messageQueue.put(ConnectToTagCommandMessage(commandMessage["tag_mac"]))
                     self.queueLock.release()
                 else:
                     print("[Client] unknown result command '" + commandMessage["command"] + "'")
