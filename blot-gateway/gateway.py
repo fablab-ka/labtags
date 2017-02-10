@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, threading, time, requests
+import sys, threading, time
 from Queue import Queue
 from tagscanner import TagScanner
 from utils import list_contains
@@ -30,8 +30,8 @@ class ScanLoopThread(threading.Thread):
 
         for tag in tags:
             if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
-                print("[ScanThread] discovered Tag", tag.mac)
-                
+                print("[ScanThread] discovered Tag" + tag.mac)
+
                 self.tagCache.append(tag)
 
                 self.queueLock.acquire()
@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
     queueLock = threading.Lock()
     messageQueue = Queue()
-    blotClient = Client('http://homeserver.spdns.org/biot.php')
+    blotClient = Client('http://homeserver.spdns.org/blot.php', "b8:27:eb:0b:de:50", "192.168.1.88")
 
     threads = [
         ScanLoopThread(messageQueue, queueLock),
