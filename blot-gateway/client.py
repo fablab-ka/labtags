@@ -3,4 +3,4 @@ class Client:
         self.serverUrl = serverUrl
 
     def sendMessage(message):
-        pass
+        print("[Client] sendMessage", message)

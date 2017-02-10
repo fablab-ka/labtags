@@ -19,20 +19,21 @@ class ScanLoopThread(threading.Thread):
         self.currentTagList = []
 
     def run(self):
-        print("scan loop start")
+        print("[ScanThread] scan loop start")
 
         while True:
             tags = self.scanner.scan()
 
             for tag in tags:
                 if not list_contains(self.currentTagList, lambda t: t.mac == tag.mac):
+                    print("[ScanThread] discovered Tag", tag.mac)
                     self.currentTagList.append(tag)
 
                     self.queueLock.acquire()
                     self.messageQueue.put(DiscoverTagMessage(tag))
                     self.queueLock.release()
 
-        print("scan loop shutdown")
+        print("[ScanThread] scan loop shutdown")
 
 class WorkerThread(threading.Thread):
 
@@ -45,19 +46,19 @@ class WorkerThread(threading.Thread):
         self.blotClient = blotClient
 
     def run(self):
-        print("worker loop start")
+        print("[WorkerThread] Worker loop start")
 
         while True:
+            self.queueLock.acquire()
             while not self.messageQueue.empty():
-                self.queueLock.acquire()
                 message = q.get()
-                self.queueLock.release()
 
                 if isinstance(message, DiscoverTagMessage):
                     self.blotClient.sendMessage(message)
+            self.queueLock.release()
 
             time.sleep(300)
-        print("worker loop shutdown")
+        print("[WorkerThread] Worker loop shutdown")
 
 
 if __name__ == "__main__":
