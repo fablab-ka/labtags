@@ -5,9 +5,10 @@ class TagConnectionThread(threading.Thread):
 
     def __init__(self, messageQueue, queueLock, mac):
         threading.Thread.__init__(self)
-        self.messageQueue
-        self.queueLock
+        self.messageQueue = messageQueue
+        self.queueLock = queueLock
         self.mac = mac
+        self.notificationTimeout = 10
 
     def run(self):
         print("[TagConnectionThread] connection loop start")
@@ -18,6 +19,9 @@ class TagConnectionThread(threading.Thread):
 
         try:
             while True:
+                if peripheral.waitForNotifications(self.notificationTimeout):
+                    #self._getResp(['ntfy','ind'], timeout)
+                    print("[TagConnectionThread] received notification")
 
                 time.sleep(0.1)
         finally:
