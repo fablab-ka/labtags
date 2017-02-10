@@ -2,53 +2,12 @@
 
 import sys, threading, time
 from Queue import Queue
-from tagscanner import TagScanner
 from utils import list_contains
-from messages import DiscoverTagMessage
 from client import Client
-
-
-class ScanLoopThread(threading.Thread):
-
-    def __init__(self, messageQueue, queueLock):
-        threading.Thread.__init__(self)
-
-        self.messageQueue = messageQueue
-        self.queueLock = queueLock
-        self.scanner = TagScanner()
-        self.tagCache = []
-        self.rediscoverTimeout = 5
-
-    def pruneTagCache(self):
-        now = time.time()
-        for tag in self.tagCache[:]:
-            if (now - tag.discovered) > self.rediscoverTimeout:
-                self.tagCache.remove(tag)
-
-    def discoverTags(self):
-        tags = self.scanner.scan()
-
-        for tag in tags:
-            if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
-                print("[ScanThread] discovered Tag" + tag.mac)
-
-                self.tagCache.append(tag)
-
-                self.queueLock.acquire()
-                self.messageQueue.put(DiscoverTagMessage(tag))
-                self.queueLock.release()
-
-    def run(self):
-        print("[ScanThread] scan loop start")
-
-        while True:
-            self.pruneTagCache()
-
-            self.discoverTags()
-
-            time.sleep(0.1)
-
-        print("[ScanThread] scan loop shutdown")
+from messages import DiscoverTagMessage
+from tagconnection import TagConnectionThread
+from tagscanner import ScanLoopThread
+from httplistener import HttpListenerThread
 
 class WorkerThread(threading.Thread):
 
@@ -57,19 +16,33 @@ class WorkerThread(threading.Thread):
 
         self.messageQueue = messageQueue
         self.queueLock = queueLock
-        self.scanner = TagScanner()
         self.blotClient = blotClient
+        self.tagConnections = []
+
+    def pruneTagConnections(self):
+        pass # todo
+
+    def handleMessageQueue(self):
+        self.queueLock.acquire()
+        while not self.messageQueue.empty():
+            message = self.messageQueue.get()
+
+            if isinstance(message, DiscoverTagMessage):
+                self.blotClient.sendMessage(message)
+            elif isinstance(message, ConnectTagMessage):
+                tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.tag)
+                self.tagConnections.append(tagConnection)
+            else:
+                print("[WorkerThread] Error: unknown message type " str(message))
 
     def run(self):
         print("[WorkerThread] Worker loop start")
 
         while True:
-            self.queueLock.acquire()
-            while not self.messageQueue.empty():
-                message = self.messageQueue.get()
+            self.pruneTagConnections()
 
-                if isinstance(message, DiscoverTagMessage):
-                    self.blotClient.sendMessage(message)
+            self.handleMessageQueue()
+
             self.queueLock.release()
 
             time.sleep(0.3)
@@ -85,7 +58,8 @@ if __name__ == "__main__":
 
     threads = [
         ScanLoopThread(messageQueue, queueLock),
-        WorkerThread(messageQueue, queueLock, blotClient)
+        WorkerThread(messageQueue, queueLock, blotClient),
+        HttpListenerThread(messageQueue, queueLock, 8080)
     ]
 
     for thread in threads:
