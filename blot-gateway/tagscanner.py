@@ -25,8 +25,8 @@ class TagScanner:
                 print(ANSI_RED + "[TagScanner] Device not connectable", d.addr + ANSI_OFF)
                 continue
 
-            print(ANSI_RED + "[TagScanner] Tag found '%s' '%s' '%s'" % (d.addr, d.addrType, d.rssi) + ANSI_OFF)
-            print(ANSI_RED + "[TagScanner] " + str(d.getScanData()) + ANSI_OFF)
+            #print(ANSI_RED + "[TagScanner] Tag found '%s' '%s' '%s'" % (d.addr, d.addrType, d.rssi) + ANSI_OFF)
+            #print(ANSI_RED + "[TagScanner] " + str(d.getScanData()) + ANSI_OFF)
 
             name = d.getValueText(9)
             result.append(Tag(d.addr, d.addrType, name))
@@ -56,7 +56,7 @@ class ScanLoopThread(threading.Thread):
 
         for tag in tags:
             if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
-                print(ANSI_RED + "[ScanThread] discovered Tag " + tag.mac + ANSI_OFF)
+                print(ANSI_RED + "[ScanThread] discovered Tag '" + tag.mac + "' name: '" + tag.name + "'" + ANSI_OFF)
 
                 self.tagCache.append(tag)
 

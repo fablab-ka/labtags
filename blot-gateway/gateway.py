@@ -42,7 +42,7 @@ class WorkerThread(threading.Thread):
                 self.blotClient.sendMessage(message)
             elif isinstance(message, ConnectToTagCommandMessage):
                 if list_contains(self.tagConnections, lambda t: t.mac == message.mac):
-                    print(ANSI_CYAN + "[WorkerThread] Connection to Tag '" + message.mac + "' already established" + ANSI_OFF))
+                    print(ANSI_CYAN + "[WorkerThread] Connection to Tag '" + message.mac + "' already established" + ANSI_OFF)
                     continue
 
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)

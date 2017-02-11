@@ -18,25 +18,29 @@ class TagConnectionThread(threading.Thread):
 
         peripheral = btle.Peripheral(self.mac, btle.ADDR_TYPE_PUBLIC)
 
+        print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.mac) + ANSI_OFF)
+
         try:
             while True:
                 if peripheral.waitForNotifications(self.notificationTimeout):
+                    print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.mac + "'" + ANSI_OFF)
+
                     self.queueLock.acquire()
                     self.messageQueue.put(TagNotificationMessage(self.mac, ""))
                     self.queueLock.release()
                     #self._getResp(['ntfy','ind'], timeout)
-                    print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.mac + "'" + ANSI_OFF)
 
                 time.sleep(0.1)
         except btle.BTLEException as e:
             self.isDead = True
-            
+
             if e.code == btle.BTLEException.DISCONNECTED:
                 self.queueLock.acquire()
                 self.messageQueue.put(TagDisconnectedMessage(self.mac))
                 self.queueLock.release()
                 print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.mac + "' was disconnected." + ANSI_OFF)
             else:
+                print(ANSI_GREEN + "[TagConnectionThread] Error!" + str(e.message) + ANSI_OFF)
                 raise e
         finally:
             peripheral.disconnect()
