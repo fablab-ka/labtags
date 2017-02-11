@@ -1,4 +1,4 @@
-import threading, time
+import threading, time, sys
 from bluepy import btle
 
 from tag import Tag
@@ -56,7 +56,7 @@ class ScanLoopThread(threading.Thread):
 
         for tag in tags:
             if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
-                print(ANSI_RED + "[ScanThread] discovered Tag '" + tag.mac + "' name: '" + tag.name + "'" + ANSI_OFF)
+                print(ANSI_RED + "[ScanThread] discovered Tag '" + str(tag.mac) + "' name: '" + str(tag.name) + "'" + ANSI_OFF)
 
                 self.tagCache.append(tag)
 
@@ -68,9 +68,12 @@ class ScanLoopThread(threading.Thread):
         print(ANSI_RED + "[ScanThread] scan loop start" + ANSI_OFF)
 
         while True:
-            self.pruneTagCache()
+            try:
+                self.pruneTagCache()
 
-            self.discoverTags()
+                self.discoverTags()
+            except:
+                print(ANSI_RED + "[ScanThread] " + sys.exec_info()[0] + ANSI_OFF)
 
             time.sleep(0.1)
 
