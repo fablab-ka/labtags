@@ -10,7 +10,7 @@ class TagConnectionThread(threading.Thread):
         self.messageQueue = messageQueue
         self.queueLock = queueLock
         self.mac = mac
-        self.notificationTimeout = 10
+        self.notificationTimeout = 1
         self.isDead = False
         self.peripheral = None
         self.beepWasTriggered = False
@@ -22,9 +22,14 @@ class TagConnectionThread(threading.Thread):
             print(ANSI_GREEN + "[TagConnectionThread] Error! Connection already dead" + ANSI_OFF)
             return
 
+        self.beepWasTriggered = True
+
+    def setBeepCharacteristicValue(val):
+        if self.isDead:
+            print(ANSI_GREEN + "[TagConnectionThread] Error! Connection already dead" + ANSI_OFF)
+            return
         if not self.peripheral:
             print(ANSI_GREEN + "[TagConnectionThread] Peripheral not yet initialized. Triggering beep later" + ANSI_OFF)
-            self.beepWasTriggered = True
             return
 
         success = False
@@ -36,7 +41,10 @@ class TagConnectionThread(threading.Thread):
                 for characteristic in characteristics:
                     if characteristic.uuid == btle.UUID(10758):
                         print(ANSI_GREEN + "[TagConnectionThread] found the Alert Level Characteristic" + ANSI_OFF)
-                        characteristic.write("0x01")
+                        if val:
+                            characteristic.write("0x01")
+                        else:
+                            characteristic.write("0x00")
                         success = True
                         continue
                 continue
@@ -52,7 +60,9 @@ class TagConnectionThread(threading.Thread):
         print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.mac) + ANSI_OFF)
 
         if self.beepWasTriggered:
-            self.triggerBeep()
+            self.setBeepCharacteristicValue(True)
+            time.sleep(1)
+            self.setBeepCharacteristicValue(False)
 
         try:
             while True:
@@ -62,7 +72,6 @@ class TagConnectionThread(threading.Thread):
                     self.queueLock.acquire()
                     self.messageQueue.put(TagNotificationMessage(self.mac, "press"))
                     self.queueLock.release()
-                    #self._getResp(['ntfy','ind'], timeout)
 
                 time.sleep(0.1)
         except btle.BTLEException as e:
