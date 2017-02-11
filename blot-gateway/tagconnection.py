@@ -8,7 +8,7 @@ class TagConnectionThread(threading.Thread):
     def __init__(self, messageQueue, queueLock, mac):
         threading.Thread.__init__(self)
 
-        btle.Debugging = True
+        #btle.Debugging = True
         self.messageQueue = messageQueue
         self.queueLock = queueLock
         self.mac = mac
