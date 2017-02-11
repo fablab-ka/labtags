@@ -12,8 +12,7 @@ Bluetooth iTag utilities
 * TAG_CONNECTED (tag_mac, time)
 * TAG_LOST (tag_mac, time)
 * TAG_DISCONNECTED (tag_mac, time)
-* TAG_BUTTON_PRESSED (tag_mac, time)
-* TAG_BUTTON_DOUBLE_PRESSED (tag_mac, time)
+* TAG_NOTIFICATION (tag_mac, notification_type, time)
 * TAG_DATA_CHANGED (tag_mac, name, battery, state, rssi, time)
 * TAG_BEEP_STATE_CHANGED (tag_mac, state, time)
 
