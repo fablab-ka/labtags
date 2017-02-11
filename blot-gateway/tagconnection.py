@@ -36,7 +36,7 @@ class TagConnectionThread(threading.Thread):
                 for characteristic in characteristics:
                     if characteristic.uuid == btle.UUID(10758):
                         print(ANSI_GREEN + "[TagConnectionThread] found the Alert Level Characteristic" + ANSI_OFF)
-                        characteristic.write(1)
+                        characteristic.write("0x01")
                         success = True
                         continue
                 continue
