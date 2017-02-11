@@ -4,7 +4,7 @@ COMMAND_CONNECT_TAG = "CONNECT_TAG"
 
 class Message:
     def __init__(self):
-        self.queryTemplate = "?action=%s&tag_mac=%s&gateway_mac=%s&gateway_ip=%s&time=%d"
+        self.queryTemplate = "?action=%s&tag_mac=%s&tag_name=%s&gateway_mac=%s&gateway_ip=%s&time=%d"
 
     def toUrlQuery():
         return ""
@@ -20,6 +20,7 @@ class DiscoverTagMessage(Message):
         return self.queryTemplate % (
             "TAG_DISCOVERED",
             self.tag.mac,
+            self.tag.name,
             gateway_mac,
             gateway_ip,
             self.time
