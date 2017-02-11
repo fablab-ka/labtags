@@ -6,6 +6,7 @@ from client import Client
 from messages import DiscoverTagMessage, ConnectToTagCommandMessage, TagDisconnectedMessage, TagNotificationMessage
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
+from utils import ANSI_CYAN, ANSI_OFF
 
 class WorkerThread(threading.Thread):
 
@@ -33,7 +34,7 @@ class WorkerThread(threading.Thread):
             message = self.messageQueue.get()
             self.queueLock.release()
 
-            print("[WorkerThread] processing message " + str(message))
+            print(ANSI_CYAN + "[WorkerThread] processing message " + str(message) + ANSI_OFF)
 
             if isinstance(message, DiscoverTagMessage) or isinstance(message, TagDisconnectedMessage) or isinstance(message, TagNotificationMessage):
                 self.blotClient.sendMessage(message)
@@ -41,26 +42,26 @@ class WorkerThread(threading.Thread):
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
                 self.tagConnections.append(tagConnection)
 
-                print("[WorkerThread] starting new tag connection thread")
+                print(ANSI_CYAN + "[WorkerThread] starting new tag connection thread" + ANSI_OFF)
                 tagConnection.daemon = True
                 tagConnection.start()
-                print("[WorkerThread] started new tag connection thread")
+                print(ANSI_CYAN + "[WorkerThread] started new tag connection thread" + ANSI_OFF)
             else:
-                print("[WorkerThread] Error: unknown message type " + str(message))
+                print(ANSI_CYAN + "[WorkerThread] Error: unknown message type " + str(message) + ANSI_OFF)
 
 
     def run(self):
-        print("[WorkerThread] Worker loop start")
+        print(ANSI_CYAN + "[WorkerThread] Worker loop start" + ANSI_OFF)
 
         while True:
-            #print("[WorkerThread] .") # debug
+            #print(ANSI_CYAN + "[WorkerThread] .") # debu + ANSI_OFFg
 
             self.pruneTagConnections()
 
             self.handleMessageQueue()
 
             time.sleep(0.3)
-        print("[WorkerThread] Worker loop shutdown")
+        print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF)
 
 
 if __name__ == "__main__":

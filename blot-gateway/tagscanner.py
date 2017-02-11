@@ -4,6 +4,7 @@ from bluepy import btle
 from tag import Tag
 from utils import list_contains
 from messages import DiscoverTagMessage
+from utils import ANSI_RED, ANSI_OFF
 
 class TagScanner:
     def __init__(self):
@@ -21,11 +22,11 @@ class TagScanner:
 
         for d in devices:
             if not d.connectable:
-                print("[TagScanner] Device not connectable", d.addr)
+                print(ANSI_RED + "[TagScanner] Device not connectable", d.addr + ANSI_OFF)
                 continue
 
-            print("[TagScanner] Tag found '%s' '%s' '%s'" % (d.addr, d.addrType, d.rssi))
-            print(d.getScanData())
+            print(ANSI_RED + "[TagScanner] Tag found '%s' '%s' '%s'" % (d.addr, d.addrType, d.rssi) + ANSI_OFF)
+            print(ANSI_RED + "[TagScanner] " + str(d.getScanData()) + ANSI_OFF)
 
             name = d.getValueText(9)
             result.append(Tag(d.addr, d.addrType, name))
@@ -55,7 +56,7 @@ class ScanLoopThread(threading.Thread):
 
         for tag in tags:
             if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
-                print("[ScanThread] discovered Tag " + tag.mac)
+                print(ANSI_RED + "[ScanThread] discovered Tag " + tag.mac + ANSI_OFF)
 
                 self.tagCache.append(tag)
 
@@ -64,7 +65,7 @@ class ScanLoopThread(threading.Thread):
                 self.queueLock.release()
 
     def run(self):
-        print("[ScanThread] scan loop start")
+        print(ANSI_RED + "[ScanThread] scan loop start" + ANSI_OFF)
 
         while True:
             self.pruneTagCache()
@@ -73,4 +74,4 @@ class ScanLoopThread(threading.Thread):
 
             time.sleep(0.1)
 
-        print("[ScanThread] scan loop shutdown")
+        print(ANSI_RED + "[ScanThread] scan loop shutdown" + ANSI_OFF)
