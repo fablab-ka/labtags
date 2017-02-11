@@ -43,7 +43,7 @@ class ScanLoopThread(threading.Thread):
         self.queueLock = queueLock
         self.scanner = TagScanner()
         self.tagCache = []
-        self.rediscoverTimeout = 5
+        self.rediscoverTimeout = 30
 
     def pruneTagCache(self):
         now = time.time()
