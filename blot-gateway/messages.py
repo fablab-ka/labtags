@@ -5,7 +5,7 @@ COMMAND_BEEP_TAG = "BEEP_TAG"
 
 class Message:
     def __init__(self):
-        self.queryTemplate = "?action=%s&tag_mac=%s&tag_name=%s&gateway_mac=%s&gateway_ip=%s&time=%d"
+        self.queryTemplate = "?action=%s&tag_mac=%s&gateway_mac=%s&gateway_ip=%s&time=%d"
 
     def toUrlQuery():
         return ""
@@ -14,6 +14,7 @@ class DiscoverTagMessage(Message):
     def __init__(self, tag):
         Message.__init__(self)
 
+        self.queryTemplate += "&tag_name=%s"
         self.tag = tag
         self.time = time.time()
 
@@ -21,10 +22,10 @@ class DiscoverTagMessage(Message):
         return self.queryTemplate % (
             "TAG_DISCOVERED",
             self.tag.mac,
-            self.tag.name,
             gateway_mac,
             gateway_ip,
-            self.time
+            self.time,
+            self.tag.name
         )
 
 class TagDisconnectedMessage(Message):
@@ -57,7 +58,6 @@ class TagNotificationMessage(Message):
         return self.queryTemplate % (
             "TAG_NOTIFICATION",
             self.mac,
-            self.type,
             gateway_mac,
             gateway_ip,
             self.time,
