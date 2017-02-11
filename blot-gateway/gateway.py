@@ -6,7 +6,7 @@ from client import Client
 from messages import DiscoverTagMessage, ConnectToTagCommandMessage, TagDisconnectedMessage, TagNotificationMessage
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
-from utils import ANSI_CYAN, ANSI_OFF
+from utils import ANSI_CYAN, ANSI_OFF, list_contains
 
 class WorkerThread(threading.Thread):
 
@@ -19,7 +19,9 @@ class WorkerThread(threading.Thread):
         self.tagConnections = []
 
     def pruneTagConnections(self):
-        pass # todo
+        for conn in self.tagConnections[:]:
+            if conn.isDead:
+                self.tagConnections.remove(conn)
 
     def hasElements(self):
         self.queueLock.acquire()
@@ -39,6 +41,10 @@ class WorkerThread(threading.Thread):
             if isinstance(message, DiscoverTagMessage) or isinstance(message, TagDisconnectedMessage) or isinstance(message, TagNotificationMessage):
                 self.blotClient.sendMessage(message)
             elif isinstance(message, ConnectToTagCommandMessage):
+                if list_contains(self.tagConnections, lambda t: t.mac == message.mac):
+                    print(ANSI_CYAN + "[WorkerThread] Connection to Tag '" + message.mac + "' already established" + ANSI_OFF))
+                    continue
+
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
                 self.tagConnections.append(tagConnection)
 

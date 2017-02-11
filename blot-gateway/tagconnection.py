@@ -11,6 +11,7 @@ class TagConnectionThread(threading.Thread):
         self.queueLock = queueLock
         self.mac = mac
         self.notificationTimeout = 10
+        self.isDead = False
 
     def run(self):
         print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.mac) + ANSI_OFF)
@@ -28,6 +29,8 @@ class TagConnectionThread(threading.Thread):
 
                 time.sleep(0.1)
         except btle.BTLEException as e:
+            self.isDead = True
+            
             if e.code == btle.BTLEException.DISCONNECTED:
                 self.queueLock.acquire()
                 self.messageQueue.put(TagDisconnectedMessage(self.mac))
@@ -39,3 +42,4 @@ class TagConnectionThread(threading.Thread):
             peripheral.disconnect()
 
         print(ANSI_GREEN + "[TagConnectionThread] connection loop shutdown" + ANSI_OFF)
+        self.isDead = True
