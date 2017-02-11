@@ -35,14 +35,12 @@ class WorkerThread(threading.Thread):
             if isinstance(message, DiscoverTagMessage):
                 self.blotClient.sendMessage(message)
             elif isinstance(message, ConnectToTagCommandMessage):
-                print("[WorkerThread] connect to tag command is being processed")
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
                 self.tagConnections.append(tagConnection)
 
                 print("[WorkerThread] starting new tag connection thread")
                 tagConnection.daemon = True
                 tagConnection.start()
-                print("[WorkerThread] started new tag connection thread")
             else:
                 print("[WorkerThread] Error: unknown message type " + str(message))
 

@@ -11,9 +11,7 @@ class TagConnectionThread(threading.Thread):
         self.notificationTimeout = 10
 
     def run(self):
-        print("[TagConnectionThread] connection loop start")
-
-        print("[TagConnectionThread] Connecting to: {}, address type: {}".format(self.tag.mac, self.tag.addrType))
+        print("[TagConnectionThread] connection loop start, connecting to: {}".format(self.mac))
 
         peripheral = btle.Peripheral(self.mac, btle.ADDR_TYPE_PUBLIC)
 
