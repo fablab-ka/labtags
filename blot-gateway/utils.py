@@ -1,3 +1,4 @@
+import os
 
 def list_contains(list, filter):
     for x in list:
