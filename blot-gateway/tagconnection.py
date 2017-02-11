@@ -13,12 +13,18 @@ class TagConnectionThread(threading.Thread):
         self.notificationTimeout = 10
         self.isDead = False
         self.peripheral = None
+        self.beepWasTriggered = False
 
     def triggerBeep(self):
         print(ANSI_GREEN + "[TagConnectionThread] triggerBeep" + ANSI_OFF)
 
         if self.isDead:
             print(ANSI_GREEN + "[TagConnectionThread] Error! Connection already dead" + ANSI_OFF)
+            return
+
+        if not self.peripheral:
+            print(ANSI_GREEN + "[TagConnectionThread] Peripheral not yet initialized. Triggering beep later" + ANSI_OFF)
+            self.beepWasTriggered = True
             return
 
         success = False
@@ -44,6 +50,9 @@ class TagConnectionThread(threading.Thread):
         self.peripheral = btle.Peripheral(self.mac, btle.ADDR_TYPE_PUBLIC)
 
         print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.mac) + ANSI_OFF)
+
+        if self.beepWasTriggered:
+            self.triggerBeep()
 
         try:
             while True:
