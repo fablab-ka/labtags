@@ -1,5 +1,6 @@
 import threading, time
 from bluepy import btle
+from messages import TagDisconnectedMessage, TagNotificationMessage
 
 class TagConnectionThread(threading.Thread):
 
@@ -18,10 +19,21 @@ class TagConnectionThread(threading.Thread):
         try:
             while True:
                 if peripheral.waitForNotifications(self.notificationTimeout):
+                    self.queueLock.acquire()
+                    self.messageQueue.put(TagNotificationMessage(self.mac, ""))
+                    self.queueLock.release()
                     #self._getResp(['ntfy','ind'], timeout)
                     print("[TagConnectionThread] received notification from '" + self.mac + "'")
 
                 time.sleep(0.1)
+        except btle.BTLEException as e:
+            if e.code == btle.BTLEException.DISCONNECTED:
+                self.queueLock.acquire()
+                self.messageQueue.put(TagDisconnectedMessage(self.mac))
+                self.queueLock.release()
+                print("[TagConnectionThread] Device '" + self.mac + "' was disconnected.")
+            else:
+                raise e
         finally:
             peripheral.disconnect()
 

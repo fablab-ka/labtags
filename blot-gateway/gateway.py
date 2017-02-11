@@ -35,7 +35,7 @@ class WorkerThread(threading.Thread):
 
             print("[WorkerThread] processing message " + str(message))
 
-            if isinstance(message, DiscoverTagMessage):
+            if isinstance(message, DiscoverTagMessage) or isinstance(message, TagDisconnectedMessage):
                 self.blotClient.sendMessage(message)
             elif isinstance(message, ConnectToTagCommandMessage):
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
