@@ -3,7 +3,7 @@
 import sys, threading, time
 from Queue import Queue
 from client import Client
-from messages import DiscoverTagMessage, ConnectToTagCommandMessage, TagDisconnectedMessage, TagNotificationMessage
+from messages import *
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
