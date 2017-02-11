@@ -40,6 +40,8 @@ class TagConnectionThread(threading.Thread):
             self.peripheral._writeCmd("wr B 01\n")
         else:
             self.peripheral._writeCmd("wr B 00\n")
+        response = self._getResp('wr')
+        print(ANSI_GREEN + "[TagConnectionThread] Characteristic success (" + response + ")" + ANSI_OFF)
         return
 
         success = False
