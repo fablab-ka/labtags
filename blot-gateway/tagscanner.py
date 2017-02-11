@@ -21,7 +21,7 @@ class TagScanner:
                 print("[TagScanner] Device not connectable", d.addr)
                 continue
 
-            print("[TagScanner] Tag found " + str(d))
+            print("[TagScanner] Tag found " + str(dir(d)))
             result.append(Tag(d.addr, d.addrType))
 
         return result
