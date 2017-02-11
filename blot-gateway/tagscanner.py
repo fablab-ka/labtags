@@ -16,12 +16,16 @@ class TagScanner:
         result = []
 
         devices = self.scanner.scan(self.timeout)
+
+        self.scanner.clear()
+
         for d in devices:
             if not d.connectable:
                 print("[TagScanner] Device not connectable", d.addr)
                 continue
 
-            print("[TagScanner] Tag found '%s' '%s' '%s'" % (d.addr, d.addrType, d.rssi), d.getScanData())
+            print("[TagScanner] Tag found '%s' '%s' '%s'" % (d.addr, d.addrType, d.rssi))
+            print(d.getScanData())
 
             name = d.getValueText(9)
             result.append(Tag(d.addr, d.addrType, name))

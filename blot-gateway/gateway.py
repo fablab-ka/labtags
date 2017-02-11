@@ -53,7 +53,7 @@ class WorkerThread(threading.Thread):
         print("[WorkerThread] Worker loop start")
 
         while True:
-            print("[WorkerThread] .") # debug
+            #print("[WorkerThread] .") # debug
 
             self.pruneTagConnections()
 

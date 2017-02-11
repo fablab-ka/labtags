@@ -19,7 +19,7 @@ class TagConnectionThread(threading.Thread):
             while True:
                 if peripheral.waitForNotifications(self.notificationTimeout):
                     #self._getResp(['ntfy','ind'], timeout)
-                    print("[TagConnectionThread] received notification")
+                    print("[TagConnectionThread] received notification from '" + self.mac + "'")
 
                 time.sleep(0.1)
         finally:
