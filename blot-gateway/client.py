@@ -58,7 +58,7 @@ class Client:
         res = requests.get(url)
         print(ANSI_YELLOW + "[Client] Response: %s '%s'" % (res.status_code, res.text) + ANSI_OFF)
 
-        if res.text == "OK":
+        if res.text == "" or res.text == "OK":
             print(ANSI_YELLOW + "[Client] No Command response" + ANSI_OFF)
         else:
             self.handleResponse(res.json())
