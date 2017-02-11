@@ -26,7 +26,7 @@ class TagConnectionThread(threading.Thread):
                     print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.mac + "'" + ANSI_OFF)
 
                     self.queueLock.acquire()
-                    self.messageQueue.put(TagNotificationMessage(self.mac, ""))
+                    self.messageQueue.put(TagNotificationMessage(self.mac, "press"))
                     self.queueLock.release()
                     #self._getResp(['ntfy','ind'], timeout)
 
@@ -38,6 +38,7 @@ class TagConnectionThread(threading.Thread):
                 self.queueLock.acquire()
                 self.messageQueue.put(TagDisconnectedMessage(self.mac))
                 self.queueLock.release()
+
                 print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.mac + "' was disconnected." + ANSI_OFF)
             else:
                 print(ANSI_GREEN + "[TagConnectionThread] Error!" + str(e.message) + ANSI_OFF)

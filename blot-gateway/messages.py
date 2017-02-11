@@ -1,6 +1,7 @@
 import time
 
 COMMAND_CONNECT_TAG = "CONNECT_TAG"
+COMMAND_BEEP_TAG = "BEEP_TAG"
 
 class Message:
     def __init__(self):
