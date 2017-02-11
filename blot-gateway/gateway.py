@@ -3,7 +3,7 @@
 import sys, threading, time
 from Queue import Queue
 from client import Client
-from messages import DiscoverTagMessage, ConnectToTagCommandMessage
+from messages import DiscoverTagMessage, ConnectToTagCommandMessage, TagDisconnectedMessage, TagNotificationMessage
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 
@@ -35,7 +35,7 @@ class WorkerThread(threading.Thread):
 
             print("[WorkerThread] processing message " + str(message))
 
-            if isinstance(message, DiscoverTagMessage) or isinstance(message, TagDisconnectedMessage):
+            if isinstance(message, DiscoverTagMessage) or isinstance(message, TagDisconnectedMessage) or isinstance(message, TagNotificationMessage):
                 self.blotClient.sendMessage(message)
             elif isinstance(message, ConnectToTagCommandMessage):
                 tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
