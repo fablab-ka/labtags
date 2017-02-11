@@ -7,7 +7,7 @@ from messages import DiscoverTagMessage
 
 class TagScanner:
     def __init__(self):
-        #btle.Debugging
+        #btle.Debugging = True
         self.timeout = 4
         self.hci = 0
         self.scanner = btle.Scanner(self.hci)

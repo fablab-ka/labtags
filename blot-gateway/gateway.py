@@ -20,12 +20,15 @@ class WorkerThread(threading.Thread):
     def pruneTagConnections(self):
         pass # todo
 
-    def handleMessageQueue(self):
+    def hasElements(self):
         self.queueLock.acquire()
         hasElements = self.messageQueue.empty()
         self.queueLock.release()
+        return hasElements
 
-        while not hasElements:
+
+    def handleMessageQueue(self):
+        while not self.hasElements():
             self.queueLock.acquire()
             message = self.messageQueue.get()
             self.queueLock.release()
@@ -41,6 +44,7 @@ class WorkerThread(threading.Thread):
                 print("[WorkerThread] starting new tag connection thread")
                 tagConnection.daemon = True
                 tagConnection.start()
+                print("[WorkerThread] started new tag connection thread")
             else:
                 print("[WorkerThread] Error: unknown message type " + str(message))
 
@@ -49,6 +53,8 @@ class WorkerThread(threading.Thread):
         print("[WorkerThread] Worker loop start")
 
         while True:
+            print("[WorkerThread] .") # debug
+
             self.pruneTagConnections()
 
             self.handleMessageQueue()
