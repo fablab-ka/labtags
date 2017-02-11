@@ -7,6 +7,8 @@ class TagConnectionThread(threading.Thread):
 
     def __init__(self, messageQueue, queueLock, mac):
         threading.Thread.__init__(self)
+
+        btle.Debugging = True
         self.messageQueue = messageQueue
         self.queueLock = queueLock
         self.mac = mac
@@ -34,8 +36,8 @@ class TagConnectionThread(threading.Thread):
             print(ANSI_GREEN + "[TagConnectionThread] Peripheral not yet initialized. Triggering beep later" + ANSI_OFF)
             return
 
-        self.peripheral._writeCmd("wr 0xa 0x01\n")
-        return
+        #self.peripheral._writeCmd("wr 0xa 0x01\n")
+        #return
 
         success = False
         for service in self.peripheral.services:
