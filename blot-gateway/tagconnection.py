@@ -25,6 +25,8 @@ class TagConnectionThread(threading.Thread):
         self.beepWasTriggered = True
 
     def setBeepCharacteristicValue(self, val):
+        print(ANSI_GREEN + "[TagConnectionThread] setBeepCharacteristicValue '" + str(val) + "'" + ANSI_OFF)
+
         if self.isDead:
             print(ANSI_GREEN + "[TagConnectionThread] Error! Connection already dead" + ANSI_OFF)
             return
@@ -43,8 +45,10 @@ class TagConnectionThread(threading.Thread):
                         print(ANSI_GREEN + "[TagConnectionThread] found the Alert Level Characteristic" + ANSI_OFF)
                         if val:
                             characteristic.write("0x01")
+                            print(ANSI_GREEN + "[TagConnectionThread] enabled Alert" + ANSI_OFF)
                         else:
                             characteristic.write("0x00")
+                            print(ANSI_GREEN + "[TagConnectionThread] disabled Alert" + ANSI_OFF)
                         success = True
                         continue
                 continue
