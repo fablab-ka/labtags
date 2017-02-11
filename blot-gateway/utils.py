@@ -6,6 +6,12 @@ def list_contains(list, filter):
             return True
     return False
 
+def list_find(list, filter):
+    for x in list:
+        if filter(x):
+            return x
+    return None
+
 
 if os.getenv('C','1') == '0':
     ANSI_RED = ''

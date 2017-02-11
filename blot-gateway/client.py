@@ -1,5 +1,5 @@
 import requests
-from messages import ConnectToTagCommandMessage, COMMAND_CONNECT_TAG, COMMAND_BEEP_TAG
+from messages import ConnectToTagCommandMessage, BeepTagCommandMessage, COMMAND_CONNECT_TAG, COMMAND_BEEP_TAG
 from utils import ANSI_YELLOW, ANSI_OFF
 
 class Client:
@@ -28,9 +28,9 @@ class Client:
             print(ANSI_YELLOW + "[Client] invalid message format expected string for mac, got '" + str(commandMessage["tag_mac"]) + "'" + ANSI_OFF)
             return
 
-        #self.queueLock.acquire()
-        #self.messageQueue.put(BeepTagCommandMessage(commandMessage["tag_mac"]))
-        #self.queueLock.release()
+        self.queueLock.acquire()
+        self.messageQueue.put(BeepTagCommandMessage(commandMessage["tag_mac"]))
+        self.queueLock.release()
 
 
     def handleResponse(self, result):

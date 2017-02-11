@@ -6,7 +6,7 @@ from client import Client
 from messages import DiscoverTagMessage, ConnectToTagCommandMessage, TagDisconnectedMessage, TagNotificationMessage
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
-from utils import ANSI_CYAN, ANSI_OFF, list_contains
+from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
 
 class WorkerThread(threading.Thread):
 
@@ -52,6 +52,12 @@ class WorkerThread(threading.Thread):
                 tagConnection.daemon = True
                 tagConnection.start()
                 print(ANSI_CYAN + "[WorkerThread] started new tag connection thread" + ANSI_OFF)
+            elif isinstance(message, BeepTagCommandMessage):
+                conn = list_find(self.tagConnections, lambda t: t.mac == message.mac)
+                if conn:
+                    conn.triggerBeep()
+                else:
+                    print(ANSI_CYAN + "[WorkerThread] Tag '" + message.mac + "' is not yet connected (no connection found)" + ANSI_OFF)
             else:
                 print(ANSI_CYAN + "[WorkerThread] Error: unknown message type " + str(message) + ANSI_OFF)
 

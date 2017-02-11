@@ -13,6 +13,10 @@ class TagConnectionThread(threading.Thread):
         self.notificationTimeout = 10
         self.isDead = False
 
+    def triggerBeep(self):
+        print(ANSI_GREEN + "[TagConnectionThread] triggerBeep" + ANSI_OFF)
+        pass
+
     def run(self):
         print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.mac) + ANSI_OFF)
 
