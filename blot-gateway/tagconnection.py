@@ -36,8 +36,11 @@ class TagConnectionThread(threading.Thread):
             print(ANSI_GREEN + "[TagConnectionThread] Peripheral not yet initialized. Triggering beep later" + ANSI_OFF)
             return
 
-        #self.peripheral._writeCmd("wr 0xa 0x01\n")
-        #return
+        if val:
+            self.peripheral._writeCmd("wr B 01\n")
+        else:
+            self.peripheral._writeCmd("wr B 00\n")
+        return
 
         success = False
         for service in self.peripheral.services:
