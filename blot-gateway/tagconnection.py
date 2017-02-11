@@ -29,12 +29,12 @@ class TagConnectionThread(threading.Thread):
 
         success = False
         for service in self.peripheral.services:
-            if service.uuid == UUID(6146):
+            if service.uuid == btle.UUID(6146):
                 print(ANSI_GREEN + "[TagConnectionThread] found the Immediate Alert Service" + ANSI_OFF)
 
                 characteristics = service.getCharacteristics()
                 for characteristic in characteristics:
-                    if characteristic.uuid == UUID(10758):
+                    if characteristic.uuid == btle.UUID(10758):
                         print(ANSI_GREEN + "[TagConnectionThread] found the Alert Level Characteristic" + ANSI_OFF)
                         characteristic.write(1)
                         success = True
