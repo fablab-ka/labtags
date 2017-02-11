@@ -41,30 +41,30 @@ class TagConnectionThread(threading.Thread):
         else:
             self.peripheral._writeCmd("wr B 00\n")
         response = self.peripheral._getResp('wr')
-        print(ANSI_GREEN + "[TagConnectionThread] Characteristic success (" + response + ")" + ANSI_OFF)
+        print(ANSI_GREEN + "[TagConnectionThread] Characteristic success (" + str(response) + ")" + ANSI_OFF)
         return
 
-        success = False
-        for service in self.peripheral.services:
-            if service.uuid == btle.UUID(6146):
-                print(ANSI_GREEN + "[TagConnectionThread] found the Immediate Alert Service" + ANSI_OFF)
-
-                characteristics = service.getCharacteristics()
-                for characteristic in characteristics:
-                    if characteristic.uuid == btle.UUID(10758):
-                        print(ANSI_GREEN + "[TagConnectionThread] found the Alert Level Characteristic" + ANSI_OFF)
-                        if val:
-                            characteristic.write(binascii.unhexlify("00"))
-                            print(ANSI_GREEN + "[TagConnectionThread] enabled Alert" + ANSI_OFF)
-                        else:
-                            characteristic.write(binascii.unhexlify("01"))
-                            print(ANSI_GREEN + "[TagConnectionThread] disabled Alert" + ANSI_OFF)
-                        success = True
-                        continue
-                continue
-
-        if not success:
-            print(ANSI_GREEN + "[TagConnectionThread] failed to trigger beep, was unable to find service or characteristic" + ANSI_OFF)
+        # success = False
+        # for service in self.peripheral.services:
+        #     if service.uuid == btle.UUID(6146):
+        #         print(ANSI_GREEN + "[TagConnectionThread] found the Immediate Alert Service" + ANSI_OFF)
+        #
+        #         characteristics = service.getCharacteristics()
+        #         for characteristic in characteristics:
+        #             if characteristic.uuid == btle.UUID(10758):
+        #                 print(ANSI_GREEN + "[TagConnectionThread] found the Alert Level Characteristic" + ANSI_OFF)
+        #                 if val:
+        #                     characteristic.write(binascii.unhexlify("00"))
+        #                     print(ANSI_GREEN + "[TagConnectionThread] enabled Alert" + ANSI_OFF)
+        #                 else:
+        #                     characteristic.write(binascii.unhexlify("01"))
+        #                     print(ANSI_GREEN + "[TagConnectionThread] disabled Alert" + ANSI_OFF)
+        #                 success = True
+        #                 continue
+        #         continue
+        #
+        # if not success:
+        #     print(ANSI_GREEN + "[TagConnectionThread] failed to trigger beep, was unable to find service or characteristic" + ANSI_OFF)
 
     def run(self):
         print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.mac) + ANSI_OFF)
