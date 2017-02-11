@@ -1,4 +1,4 @@
-import threading, time
+import threading, time, binascii
 from bluepy import btle
 from messages import TagDisconnectedMessage, TagNotificationMessage
 from utils import ANSI_GREEN, ANSI_OFF
