@@ -8,6 +8,7 @@ from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
 from uuid import getnode as get_mac
+import socket
 
 class WorkerThread(threading.Thread):
 
@@ -84,7 +85,8 @@ if __name__ == "__main__":
     messageQueue = Queue()
     mac = get_mac()
     mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
-    blotClient = Client(messageQueue, queueLock, 'http://homeserver.spdns.org/blot.php', mac_str, "192.168.1.88")
+    ip = socket.gethostbyname(socket.getfqdn())
+    blotClient = Client(messageQueue, queueLock, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
 
     threads = [
         ScanLoopThread(messageQueue, queueLock),
