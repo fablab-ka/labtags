@@ -35,11 +35,10 @@ class TagScanner:
 
 class ScanLoopThread(threading.Thread):
 
-    def __init__(self, messageQueue, queueLock, tagCache):
+    def __init__(self, messageQueue, tagCache):
         threading.Thread.__init__(self)
 
         self.messageQueue = messageQueue
-        self.queueLock = queueLock
         self.scanner = TagScanner()
         self.tagCache = tagCache
         self.rediscoverTimeout = 5
@@ -59,9 +58,7 @@ class ScanLoopThread(threading.Thread):
 
                 self.tagCache.append(tag)
 
-                self.queueLock.acquire()
                 self.messageQueue.put(DiscoverTagMessage(tag))
-                self.queueLock.release()
 
     def run(self):
         print(ANSI_RED + "[ScanThread] scan loop start" + ANSI_OFF)

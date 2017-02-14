@@ -5,12 +5,11 @@ from utils import ANSI_GREEN, ANSI_OFF
 
 class TagConnectionThread(threading.Thread):
 
-    def __init__(self, messageQueue, queueLock, tag):
+    def __init__(self, messageQueue, tag):
         threading.Thread.__init__(self)
 
         #btle.Debugging = True
         self.messageQueue = messageQueue
-        self.queueLock = queueLock
         self.tag = tag
         self.notificationTimeout = 1
         self.isDead = False
@@ -86,18 +85,14 @@ class TagConnectionThread(threading.Thread):
                 if self.peripheral.waitForNotifications(self.notificationTimeout):
                     print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.tag.mac + "'" + ANSI_OFF)
 
-                    self.queueLock.acquire()
                     self.messageQueue.put(TagNotificationMessage(self.tag.mac, "press"))
-                    self.queueLock.release()
 
                 time.sleep(0.1)
         except btle.BTLEException as e:
             self.isDead = True
 
             if e.code == btle.BTLEException.DISCONNECTED:
-                self.queueLock.acquire()
                 self.messageQueue.put(TagDisconnectedMessage(self.tag.mac))
-                self.queueLock.release()
 
                 print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.tag.mac + "' was disconnected." + ANSI_OFF)
             else:

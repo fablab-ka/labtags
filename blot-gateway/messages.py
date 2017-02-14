@@ -10,7 +10,9 @@ class Message:
     def toUrlQuery():
         return ""
 
-class DiscoverTagMessage(Message):
+class ClientMessage(Message): pass
+
+class DiscoverTagMessage(ClientMessage):
     def __init__(self, tag):
         Message.__init__(self)
 
@@ -28,7 +30,7 @@ class DiscoverTagMessage(Message):
             self.tag.name
         )
 
-class TagDisconnectedMessage(Message):
+class TagDisconnectedMessage(ClientMessage):
     def __init__(self, mac):
         Message.__init__(self)
 
@@ -44,7 +46,7 @@ class TagDisconnectedMessage(Message):
             self.time
         )
 
-class TagNotificationMessage(Message):
+class TagNotificationMessage(ClientMessage):
     def __init__(self, mac, type):
         Message.__init__(self)
 
