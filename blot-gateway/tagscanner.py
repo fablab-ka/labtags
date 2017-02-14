@@ -28,7 +28,7 @@ class TagScanner:
             #print(ANSI_RED + "[TagScanner] " + str(d.getScanData()) + ANSI_OFF)
 
             name = d.getValueText(9)
-            result.append(Tag(d.addr, d.addrType, name))
+            result.append(Tag(d.addr, d.addrType, name, d.rssi))
 
         return result
 

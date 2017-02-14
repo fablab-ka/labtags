@@ -10,13 +10,16 @@ class Message:
     def toUrlQuery():
         return ""
 
-class ClientMessage(Message): pass
-
-class DiscoverTagMessage(ClientMessage):
+class ClientMessage(Message):
     def __init__(self, tag):
         Message.__init__(self)
 
-        self.queryTemplate += "&tag_name=%s"
+        self.queryTemplate += "&tag_name=%s&tag_rssi=%s"
+
+class DiscoverTagMessage(ClientMessage):
+    def __init__(self, tag):
+        ClientMessage.__init__(self)
+
         self.tag = tag
         self.time = time.time()
 
@@ -27,42 +30,47 @@ class DiscoverTagMessage(ClientMessage):
             gateway_mac,
             gateway_ip,
             self.time,
+            self.tag.rssi,
             self.tag.name
         )
 
 class TagDisconnectedMessage(ClientMessage):
-    def __init__(self, mac):
-        Message.__init__(self)
+    def __init__(self, tag):
+        ClientMessage.__init__(self)
 
-        self.mac = mac
+        self.tag = tag
         self.time = time.time()
 
     def toUrlQuery(self, gateway_mac, gateway_ip):
         return self.queryTemplate % (
             "TAG_DISCONNECTED",
-            self.mac,
+            self.tag.mac,
             gateway_mac,
             gateway_ip,
-            self.time
+            self.time,
+            self.tag.rssi,
+            self.tag.name
         )
 
 class TagNotificationMessage(ClientMessage):
-    def __init__(self, mac, type):
-        Message.__init__(self)
+    def __init__(self, tag, type):
+        ClientMessage.__init__(self)
 
         self.queryTemplate += "&notification_type=%s"
 
-        self.mac = mac
+        self.tag = tag
         self.type = type
         self.time = time.time()
 
     def toUrlQuery(self, gateway_mac, gateway_ip):
         return self.queryTemplate % (
             "TAG_NOTIFICATION",
-            self.mac,
+            self.tag.mac,
             gateway_mac,
             gateway_ip,
             self.time,
+            self.tag.rssi,
+            self.tag.name,
             self.type
         )
 
