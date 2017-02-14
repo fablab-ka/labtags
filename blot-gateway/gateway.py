@@ -40,7 +40,7 @@ class WorkerThread(threading.Thread):
 
             print(ANSI_CYAN + "[WorkerThread] processing message " + str(message) + ANSI_OFF)
 
-            if isinstance(message, DiscoverTagMessage) or isinstance(message, TagDisconnectedMessage) or isinstance(message, TagNotificationMessage):
+            if isinstance(message, DiscoverTagMessage) or isinstance(message, TagConnectedMessage) or isinstance(message, TagDisconnectedMessage) or isinstance(message, TagNotificationMessage):
                 self.blotClient.sendMessage(message)
             elif isinstance(message, ConnectToTagCommandMessage):
                 if list_contains(self.tagConnections, lambda t: t.mac == message.mac):
@@ -53,7 +53,7 @@ class WorkerThread(threading.Thread):
                 print(ANSI_CYAN + "[WorkerThread] starting new tag connection thread" + ANSI_OFF)
                 tagConnection.daemon = True
                 tagConnection.start()
-                print(ANSI_CYAN + "[WorkerThread] started new tag connection thread" + ANSI_OFF)
+                #print(ANSI_CYAN + "[WorkerThread] started new tag connection thread" + ANSI_OFF)
             elif isinstance(message, BeepTagCommandMessage):
                 conn = list_find(self.tagConnections, lambda t: t.mac == message.mac)
                 if conn:
@@ -85,7 +85,12 @@ if __name__ == "__main__":
     messageQueue = Queue()
     mac = get_mac()
     mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
-    ip = socket.gethostbyname(socket.getfqdn())
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("gmail.com",80))
+    ip = s.getsockname()[0]
+    s.close()
+
     blotClient = Client(messageQueue, queueLock, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
 
     threads = [

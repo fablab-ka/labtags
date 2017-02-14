@@ -1,6 +1,7 @@
 import threading, time, binascii
 from bluepy import btle
-from messages import TagDisconnectedMessage, TagNotificationMessage
+#from messages import TagConnectedMessage, TagDisconnectedMessage, TagNotificationMessage
+from messages import *
 from utils import ANSI_GREEN, ANSI_OFF
 
 class TagConnectionThread(threading.Thread):
@@ -72,6 +73,10 @@ class TagConnectionThread(threading.Thread):
         self.peripheral = btle.Peripheral(self.mac, btle.ADDR_TYPE_PUBLIC)
 
         print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.mac) + ANSI_OFF)
+
+        self.queueLock.acquire()
+        self.messageQueue.put(TagConnectedMessage(self.mac))
+        self.queueLock.release()
 
         try:
             while True:

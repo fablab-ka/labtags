@@ -28,6 +28,22 @@ class DiscoverTagMessage(Message):
             self.tag.name
         )
 
+class TagConnectedMessage(Message):
+    def __init__(self, mac):
+        Message.__init__(self)
+
+        self.mac = mac
+        self.time = time.time()
+
+    def toUrlQuery(self, gateway_mac, gateway_ip):
+        return self.queryTemplate % (
+            "TAG_CONNECTED",
+            self.mac,
+            gateway_mac,
+            gateway_ip,
+            self.time
+        )
+
 class TagDisconnectedMessage(Message):
     def __init__(self, mac):
         Message.__init__(self)
