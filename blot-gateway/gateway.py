@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import sys, threading, time
+import sys, threading, time, socket
 from Queue import Queue
 from client import Client
 from messages import *
@@ -8,16 +8,17 @@ from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
 from uuid import getnode as get_mac
-import socket
+from tagcache import TagCache
 
 class WorkerThread(threading.Thread):
 
-    def __init__(self, messageQueue, queueLock, blotClient):
+    def __init__(self, messageQueue, queueLock, blotClient, tagCache):
         threading.Thread.__init__(self)
 
         self.messageQueue = messageQueue
         self.queueLock = queueLock
         self.blotClient = blotClient
+        self.tagCache = tagCache
         self.tagConnections = []
 
     def pruneTagConnections(self):
@@ -30,7 +31,6 @@ class WorkerThread(threading.Thread):
         hasElements = self.messageQueue.empty()
         self.queueLock.release()
         return hasElements
-
 
     def handleMessageQueue(self):
         while not self.hasElements():
@@ -47,7 +47,12 @@ class WorkerThread(threading.Thread):
                     print(ANSI_CYAN + "[WorkerThread] Connection to Tag '" + message.mac + "' already established" + ANSI_OFF)
                     continue
 
-                tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, message.mac)
+                tag = self.tagCache.findByMac(message.mac)
+                if not tag:
+                    print(ANSI_CYAN + "[WorkerThread] no Tag with that mac found (" + str(message.mac) + ")" + ANSI_OFF)
+                    continue
+
+                tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, tag)
                 self.tagConnections.append(tagConnection)
 
                 print(ANSI_CYAN + "[WorkerThread] starting new tag connection thread" + ANSI_OFF)
@@ -88,9 +93,11 @@ if __name__ == "__main__":
     ip = socket.gethostbyname(socket.getfqdn())
     blotClient = Client(messageQueue, queueLock, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
 
+    tagCache = TagCache()
+
     threads = [
-        ScanLoopThread(messageQueue, queueLock),
-        WorkerThread(messageQueue, queueLock, blotClient)
+        ScanLoopThread(messageQueue, queueLock, tagCache),
+        WorkerThread(messageQueue, queueLock, blotClient, tagCache)
     ]
 
     for thread in threads:
