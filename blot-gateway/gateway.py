@@ -82,16 +82,18 @@ class WorkerThread(threading.Thread):
             time.sleep(0.3)
         print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF)
 
+def createBlotClient():
+    mac = get_mac()
+    mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
+    ip = socket.gethostbyname(socket.getfqdn())
+    blotClient = Client(messageQueue, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
+    return blotClient
 
 def runGateway():
     print("Starting BlOT Gateway")
 
     messageQueue = MessageQueue()
-    mac = get_mac()
-    mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
-    ip = socket.gethostbyname(socket.getfqdn())
-    blotClient = Client(messageQueue, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
-
+    blotClient = createBlotClient()
     tagCache = TagCache()
 
     threads = [
