@@ -105,13 +105,13 @@ class TagConnectionThread(threading.Thread):
             self.peripheral.lightmeter.enable()
         else:
             print(ANSI_WHITE + "------------ iTag {} -------------".format(self.mac) + ANSI_OFF)
-            self.peripheral = btle.Peripheral(self.mac, btle.ADDR_TYPE_PUBLIC)
+            self.peripheral = btle.Peripheral(self.tag.mac, btle.ADDR_TYPE_PUBLIC)
         
 
         print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.tag.mac) + ANSI_OFF)
 
         self.queueLock.acquire()
-        self.messageQueue.put(TagConnectedMessage(self.mac))
+        self.messageQueue.put(TagConnectedMessage(self.tag.mac))
         self.queueLock.release()
 
         try:
@@ -131,7 +131,7 @@ class TagConnectionThread(threading.Thread):
                     self.messageQueue.put(TagNotificationMessage(self.tag.mac, "press"))
                     self.queueLock.release()
 
-                if self.mac == 'b0:b4:48:b8:7f:84' or self.mac == 'b0:b4:48:b8:43:86':
+                if self.tag.mac == 'b0:b4:48:b8:7f:84' or self.tag.mac == 'b0:b4:48:b8:43:86':
                     print("Temp: ", self.peripheral.IRtemperature.read(), ' C')
                     print("Humidity: ", self.peripheral.humidity.read(),  ' Hrel')
                     print("Barometer: ", self.peripheral.barometer.read())
