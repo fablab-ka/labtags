@@ -5,30 +5,32 @@
 
 case "$1" in
 start)
-    echo "Starting BLE Gateway"
+    echo "Starting BLE/iTag Gateway"
     cd /usr/local/lib/python2.7/dist-packages/labtags/blot-gateway
     python gateway.py &
  ;;
 stop)
-    echo "Stopping BLE Gateway"
+    echo "Stopping BLE/iTag Gateway"
     sudo pkill -f gateway.py
 ;;
 update)
-    echo "Stopping BLE Gateway"
-    #sudo killall gateway
+    echo "Stopping BLE/iTag Gateway"
 	sudo pkill -f gateway.py
 	echo "Update BLE Gateway"
 	git pull
 ;;
+auto)
+    echo "Stopping BLE/iTag Gateway"
+	sudo pkill -f gateway.py
+	echo "Update BLE Gateway"
+	git pull
+	echo "Starting BLE/iTag Gateway"
+	python ./blot-gateway/gateway.py &
+;;
 *)
-    echo "Usage: /etc/init.d/xxxx {start|stop}"
+    echo "Usage: /etc/init.d/xxxx {start|stop|update|auto}"
     exit 1
 ;;
 esac
 
 exit 0
-
-
-
-
-
