@@ -22,13 +22,13 @@ import sensortag
                 
 class TagConnectionThread(threading.Thread):
 
-    def __init__(self, messageQueue, queueLock, mac):
+    def __init__(self, messageQueue, queueLock, tag):
         threading.Thread.__init__(self)
 
         #btle.Debugging = True
         self.messageQueue = messageQueue
         self.queueLock = queueLock
-        self.mac = mac
+        self.tag = tag
         #self.name2 = name
         self.notificationTimeout = 1
         self.isDead = False
@@ -85,7 +85,7 @@ class TagConnectionThread(threading.Thread):
         #     print(ANSI_GREEN + "[TagConnectionThread] failed to trigger beep, was unable to find service or characteristic" + ANSI_OFF)
 
     def run(self):
-        print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.mac) + ANSI_OFF)
+        print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.tag.mac) + ANSI_OFF)
 
         
         #self.peripheral.__init__(self,self.mac)
@@ -108,7 +108,7 @@ class TagConnectionThread(threading.Thread):
             self.peripheral = btle.Peripheral(self.mac, btle.ADDR_TYPE_PUBLIC)
         
 
-        print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.mac) + ANSI_OFF)
+        print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.tag.mac) + ANSI_OFF)
 
         self.queueLock.acquire()
         self.messageQueue.put(TagConnectedMessage(self.mac))
@@ -125,10 +125,10 @@ class TagConnectionThread(threading.Thread):
                     self.setBeepCharacteristicValue(False)
 
                 if self.peripheral.waitForNotifications(self.notificationTimeout):
-                    print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.mac + "'" + ANSI_OFF)
+                    print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.tag.mac + "'" + ANSI_OFF)
 
                     self.queueLock.acquire()
-                    self.messageQueue.put(TagNotificationMessage(self.mac, "press"))
+                    self.messageQueue.put(TagNotificationMessage(self.tag.mac, "press"))
                     self.queueLock.release()
 
                 if self.mac == 'b0:b4:48:b8:7f:84' or self.mac == 'b0:b4:48:b8:43:86':
@@ -147,10 +147,10 @@ class TagConnectionThread(threading.Thread):
 
             if e.code == btle.BTLEException.DISCONNECTED:
                 self.queueLock.acquire()
-                self.messageQueue.put(TagDisconnectedMessage(self.mac))
+                self.messageQueue.put(TagDisconnectedMessage(self.tag.mac))
                 self.queueLock.release()
 
-                print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.mac + "' was disconnected." + ANSI_OFF)
+                print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.tag.mac + "' was disconnected." + ANSI_OFF)
             else:
                 print(ANSI_GREEN + "[TagConnectionThread] Error!" + str(e.message) + ANSI_OFF)
                 raise e

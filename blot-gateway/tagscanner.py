@@ -2,7 +2,6 @@ import threading, time, sys
 from bluepy import btle
 
 from tag import Tag
-from utils import list_contains
 from messages import DiscoverTagMessage
 from utils import ANSI_RED, ANSI_OFF
 
@@ -36,13 +35,13 @@ class TagScanner:
 
 class ScanLoopThread(threading.Thread):
 
-    def __init__(self, messageQueue, queueLock):
+    def __init__(self, messageQueue, queueLock, tagCache):
         threading.Thread.__init__(self)
 
         self.messageQueue = messageQueue
         self.queueLock = queueLock
         self.scanner = TagScanner()
-        self.tagCache = []
+        self.tagCache = tagCache
         self.rediscoverTimeout = 5
 
     def pruneTagCache(self):
@@ -55,7 +54,7 @@ class ScanLoopThread(threading.Thread):
         tags = self.scanner.scan()
 
         for tag in tags:
-            if not list_contains(self.tagCache, lambda t: t.mac == tag.mac):
+            if not self.tagCache.hasTagByMac(tag.mac):
                 print(ANSI_RED + "[ScanThread] discovered Tag '" + str(tag.mac) + "' name: '" + str(tag.name) + "'" + ANSI_OFF)
 
                 self.tagCache.append(tag)
