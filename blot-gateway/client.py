@@ -49,17 +49,19 @@ class Client:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[Client] sendMessage" + str(message) + ANSI_OFF)
 
+        if Config.IFTTTUrlTemplate:
+            url = Config.IFTTTUrlTemplate % (message.tag.mac)
+            print(ANSI_YELLOW + "[Client] IFTTT GET " + url + ANSI_OFF)
+            iftttRes = requests.get(url)
+
+            print(ANSI_YELLOW + "[Client] IFTTT Response: %s '%s'" % (iftttRes.status_code, iftttRes.text) + ANSI_OFF)
+
         if Config.UseGetRequests:
             url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
             print(ANSI_YELLOW + "[Client] GET " + url + ANSI_OFF)
             res = requests.get(url)
-        else:
-            url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
-            print(ANSI_YELLOW + "[Client] GET " + url + ANSI_OFF)
-            res = requests.get(url)
 
-
-        print(ANSI_YELLOW + "[Client] Response: %s '%s'" % (res.status_code, res.text) + ANSI_OFF)
+            print(ANSI_YELLOW + "[Client] Response: %s '%s'" % (res.status_code, res.text) + ANSI_OFF)
 
         if res.text == "" or res.text == "OK":
             print(ANSI_YELLOW + "[Client] No Command response" + ANSI_OFF)
