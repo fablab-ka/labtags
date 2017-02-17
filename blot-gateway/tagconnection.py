@@ -18,8 +18,8 @@ import sensortag
 #            return 1
 #        else:
 #            return 0
-               
-                
+
+
 class TagConnectionThread(threading.Thread):
 
     def __init__(self, messageQueue, tag):
@@ -86,7 +86,7 @@ class TagConnectionThread(threading.Thread):
     def run(self):
         print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.tag.mac) + ANSI_OFF)
 
-        
+
         #self.peripheral.__init__(self,self.mac)
         #svcs = self.peripheral.discoverServices()
         #if _TI_UUID(0xAA70) in svcs:
@@ -105,13 +105,11 @@ class TagConnectionThread(threading.Thread):
         else:
             print(ANSI_WHITE + "------------ iTag {} -------------".format(self.mac) + ANSI_OFF)
             self.peripheral = btle.Peripheral(self.tag.mac, btle.ADDR_TYPE_PUBLIC)
-        
+
 
         print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.tag.mac) + ANSI_OFF)
 
-        self.queueLock.acquire()
         self.messageQueue.put(TagConnectedMessage(self.tag.mac))
-        self.queueLock.release()
 
         try:
             while True:

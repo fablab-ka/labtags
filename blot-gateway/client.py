@@ -3,9 +3,8 @@ from messages import ConnectToTagCommandMessage, BeepTagCommandMessage, COMMAND_
 from utils import ANSI_YELLOW, ANSI_OFF
 
 class Client:
-    def __init__(self, messageQueue, queueLock, serverUrl, gateway_mac, gateway_ip):
+    def __init__(self, messageQueue, serverUrl, gateway_mac, gateway_ip):
         self.messageQueue = messageQueue
-        self.queueLock = queueLock
         self.serverUrl = serverUrl
         self.gateway_mac = gateway_mac
         self.gateway_ip = gateway_ip
@@ -17,9 +16,7 @@ class Client:
             print(ANSI_YELLOW + "[Client] invalid message format expected string for mac, got '" + str(commandMessage["tag_mac"]) + "'" + ANSI_OFF)
             return
 
-        self.queueLock.acquire()
         self.messageQueue.put(ConnectToTagCommandMessage(commandMessage["tag_mac"]))
-        self.queueLock.release()
 
     def handleBeepResponse(self, commandMessage):
         print(ANSI_YELLOW + "[Client] Received Beep Command for Tag '" + str(commandMessage["tag_mac"]) + "'" + ANSI_OFF)
@@ -28,9 +25,7 @@ class Client:
             print(ANSI_YELLOW + "[Client] invalid message format expected string for mac, got '" + str(commandMessage["tag_mac"]) + "'" + ANSI_OFF)
             return
 
-        self.queueLock.acquire()
         self.messageQueue.put(BeepTagCommandMessage(commandMessage["tag_mac"]))
-        self.queueLock.release()
 
 
     def handleResponse(self, result):
