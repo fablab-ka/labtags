@@ -6,7 +6,7 @@
 case "$1" in
 start)
     echo "Starting ngrok for BLE/iTag Gateway"
-    ngrok http 3333 &
+    ngrok http 3333 > /dev/null &
     echo "Starting BLE/iTag Gateway"
     cd /home/pi/labtags/blot-gateway
     python gateway.py &
