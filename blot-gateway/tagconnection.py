@@ -107,7 +107,7 @@ class TagConnectionThread(threading.Thread):
 
         print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.tag.mac) + ANSI_OFF)
 
-        self.messageQueue.put(TagConnectedMessage(self.tag.mac))
+        self.messageQueue.put(TagConnectedMessage(self.tag))
 
         try:
             while True:
