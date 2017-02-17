@@ -1,4 +1,4 @@
-import threading, time, sys
+import threading, time, traceback
 from bluepy import btle
 
 from tag import Tag
@@ -69,7 +69,7 @@ class ScanLoopThread(threading.Thread):
 
                 self.discoverTags()
             except:
-                print(ANSI_RED + "[ScanThread] " + str(sys.exc_info()[0]) + ANSI_OFF)
+                print(ANSI_RED + "[ScanThread] " + str(traceback.format_exc()) + ANSI_OFF)
 
             time.sleep(0.1)
 
