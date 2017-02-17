@@ -87,13 +87,13 @@ class TagConnectionThread(threading.Thread):
         print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.tag.mac) + ANSI_OFF)
 
 
-        #self.peripheral.__init__(self,self.mac)
+        #self.peripheral.__init__(self, self.tag.mac)
         #svcs = self.peripheral.discoverServices()
         #if _TI_UUID(0xAA70) in svcs:
-        if self.mac == 'b0:b4:48:b8:7f:84' or self.mac == 'b0:b4:48:b8:43:86':
+        if self.tag.mac == 'b0:b4:48:b8:7f:84' or self.tag.mac == 'b0:b4:48:b8:43:86':
             #senstag = 1
-            print(ANSI_WHITE + "------------ SensorTag {} -------------".format(self.mac) + ANSI_OFF)
-            self.peripheral = sensortag.SensorTag(self.mac)
+            print(ANSI_WHITE + "------------ SensorTag {} -------------".format(self.tag.mac) + ANSI_OFF)
+            self.peripheral = sensortag.SensorTag(self.tag.mac)
             self.peripheral.IRtemperature.enable()
             self.peripheral.humidity.enable()
             self.peripheral.barometer.enable()
@@ -103,7 +103,7 @@ class TagConnectionThread(threading.Thread):
             self.peripheral.keypress.enable()
             self.peripheral.lightmeter.enable()
         else:
-            print(ANSI_WHITE + "------------ iTag {} -------------".format(self.mac) + ANSI_OFF)
+            print(ANSI_WHITE + "------------ iTag {} -------------".format(self.tag.mac) + ANSI_OFF)
             self.peripheral = btle.Peripheral(self.tag.mac, btle.ADDR_TYPE_PUBLIC)
 
 
