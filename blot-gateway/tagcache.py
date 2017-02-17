@@ -21,7 +21,7 @@ class TagCache:
         self.threadLock.acquire()
         result = list_contains(self.data, lambda t: t.mac == mac)
         self.threadLock.release()
-        
+
         return result
 
     def findByMac(self, mac):
@@ -35,3 +35,6 @@ class TagCache:
         self.threadLock.release()
 
         return result
+
+    def getData(self):
+        return self.data[:]

@@ -45,7 +45,7 @@ class ScanLoopThread(threading.Thread):
 
     def pruneTagCache(self):
         now = time.time()
-        for tag in self.tagCache[:]:
+        for tag in self.tagCache.getData():
             if (now - tag.discovered) > self.rediscoverTimeout:
                 self.tagCache.remove(tag)
 
