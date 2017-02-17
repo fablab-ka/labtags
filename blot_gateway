@@ -14,10 +14,13 @@ start)
 stop)
     echo "Stopping BLE/iTag Gateway"
     sudo pkill -f gateway.py
+    echo "Stopping ngrok for BLE/iTag Gateway"
+    sudo pkill -f ngrok
 ;;
 update)
     echo "Stopping BLE/iTag Gateway"
   	sudo pkill -f gateway.py
+    echo "Stopping ngrok for BLE/iTag Gateway"
     sudo pkill -f ngrok
   	echo "Update BLE Gateway"
     cd /home/pi/labtags/blot-gateway
