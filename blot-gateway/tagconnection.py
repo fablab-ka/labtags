@@ -28,7 +28,6 @@ class TagConnectionThread(threading.Thread):
         #btle.Debugging = True
         self.messageQueue = messageQueue
         self.tag = tag
-        #self.name2 = name
         self.notificationTimeout = 1
         self.isDead = False
         self.peripheral = None
@@ -86,13 +85,12 @@ class TagConnectionThread(threading.Thread):
     def run(self):
         print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.tag.mac) + ANSI_OFF)
 
-
         #self.peripheral.__init__(self, self.tag.mac)
         #svcs = self.peripheral.discoverServices()
         #if _TI_UUID(0xAA70) in svcs:
         if self.tag.mac == 'b0:b4:48:b8:7f:84' or self.tag.mac == 'b0:b4:48:b8:43:86':
             #senstag = 1
-            print(ANSI_WHITE + "------------ SensorTag {} -------------".format(self.tag.mac) + ANSI_OFF)
+            print(ANSI_GREEN + "[TagConnectionThread] it's a SensorTag {} -------------".format(self.tag.mac) + ANSI_OFF)
             self.peripheral = sensortag.SensorTag(self.tag.mac)
             self.peripheral.IRtemperature.enable()
             self.peripheral.humidity.enable()
@@ -103,7 +101,7 @@ class TagConnectionThread(threading.Thread):
             self.peripheral.keypress.enable()
             self.peripheral.lightmeter.enable()
         else:
-            print(ANSI_WHITE + "------------ iTag {} -------------".format(self.tag.mac) + ANSI_OFF)
+            print(ANSI_GREEN + "[TagConnectionThread] it's a iTag {} -------------".format(self.tag.mac) + ANSI_OFF)
             self.peripheral = btle.Peripheral(self.tag.mac, btle.ADDR_TYPE_PUBLIC)
 
 
@@ -141,14 +139,14 @@ class TagConnectionThread(threading.Thread):
             self.isDead = True
 
             if e.code == btle.BTLEException.DISCONNECTED:
-                self.messageQueue.put(TagDisconnectedMessage(self.tag))
-
                 print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.tag.mac + "' was disconnected." + ANSI_OFF)
             else:
                 print(ANSI_GREEN + "[TagConnectionThread] Error!" + str(e.message) + ANSI_OFF)
                 raise e
         finally:
             self.peripheral.disconnect()
+
+            self.messageQueue.put(TagDisconnectedMessage(self.tag))
 
         print(ANSI_GREEN + "[TagConnectionThread] connection loop shutdown" + ANSI_OFF)
         self.isDead = True

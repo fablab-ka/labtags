@@ -13,6 +13,9 @@ class HttpListener(threading.Thread):
         self.app = Flask("Blot HTTP Listener")
 
     def handleRequest(self, mac):
+        if not mac:
+            return 'ERROR: no mac given'
+        
         self.messageQueue.put(BeepTagCommandMessage(mac))
         return 'OK'
 
