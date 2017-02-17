@@ -28,7 +28,7 @@ class WorkerThread(threading.Thread):
                 self.tagConnections.remove(conn)
 
     def handleConnectToTagMessage(self, message):
-        if list_contains(self.tagConnections, lambda t: t.mac == message.mac):
+        if list_contains(self.tagConnections, lambda t: t.tag.mac == message.mac):
             print(ANSI_CYAN + "[WorkerThread] Connection to Tag '" + message.mac + "' already established" + ANSI_OFF)
             return
 
