@@ -35,19 +35,21 @@ class DiscoverTagMessage(ClientMessage):
         )
 
 class TagConnectedMessage(ClientMessage):
-    def __init__(self, mac):
+    def __init__(self, tag):
         ClientMessage.__init__(self, tag)
 
-        self.mac = mac
+        self.tag = tag
         self.time = time.time()
 
     def toUrlQuery(self, gateway_mac, gateway_ip):
         return self.queryTemplate % (
             "TAG_CONNECTED",
-            self.mac,
+            self.tag.mac,
             gateway_mac,
             gateway_ip,
-            self.time
+            self.time,
+            self.tag.name,
+            self.tag.rssi
         )
 
 class TagDisconnectedMessage(ClientMessage):
@@ -64,8 +66,8 @@ class TagDisconnectedMessage(ClientMessage):
             gateway_mac,
             gateway_ip,
             self.time,
-            self.tag.rssi,
-            self.tag.name
+            self.tag.name,
+            self.tag.rssi
         )
 
 class TagNotificationMessage(ClientMessage):
@@ -85,8 +87,8 @@ class TagNotificationMessage(ClientMessage):
             gateway_mac,
             gateway_ip,
             self.time,
-            self.tag.rssi,
             self.tag.name,
+            self.tag.rssi,
             self.type
         )
 
