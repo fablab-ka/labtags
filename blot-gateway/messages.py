@@ -18,7 +18,7 @@ class ClientMessage(Message):
 
 class DiscoverTagMessage(ClientMessage):
     def __init__(self, tag):
-        ClientMessage.__init__(self)
+        ClientMessage.__init__(self, tag)
 
         self.tag = tag
         self.time = time.time()
@@ -36,7 +36,7 @@ class DiscoverTagMessage(ClientMessage):
 
 class TagConnectedMessage(ClientMessage):
     def __init__(self, mac):
-        ClientMessage.__init__(self)
+        ClientMessage.__init__(self, tag)
 
         self.mac = mac
         self.time = time.time()
@@ -51,8 +51,8 @@ class TagConnectedMessage(ClientMessage):
         )
 
 class TagDisconnectedMessage(ClientMessage):
-    def __init__(self, mac):
-        ClientMessage.__init__(self)
+    def __init__(self, tag):
+        ClientMessage.__init__(self, tag)
 
         self.tag = tag
         self.time = time.time()
@@ -70,7 +70,7 @@ class TagDisconnectedMessage(ClientMessage):
 
 class TagNotificationMessage(ClientMessage):
     def __init__(self, tag, type):
-        ClientMessage.__init__(self)
+        ClientMessage.__init__(self, tag)
 
         self.queryTemplate += "&notification_type=%s"
 
