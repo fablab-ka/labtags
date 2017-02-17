@@ -37,3 +37,6 @@ sudo mv ngrok /usr/bin/ngrok
 signup at https://ngrok.com/
 configure ngrok authtoken with:
 ```ngrok <authToken>```
+
+cp blot_gateway /etc/init.d/blot_gateway
+append ```/etc/init.d/blot_gateway start``` to /etc/rc.local
