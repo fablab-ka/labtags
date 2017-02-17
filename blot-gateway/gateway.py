@@ -83,15 +83,15 @@ class WorkerThread(threading.Thread):
         print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF)
 
 def createBlotClient():
-
-    #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    #s.connect(("gmail.com",80))
-    #ip = s.getsockname()[0]
-    #s.close()
-
     mac = get_mac()
     mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
     ip = socket.gethostbyname(socket.getfqdn())
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("gmail.com",80))
+    ip = s.getsockname()[0]
+    s.close()
+
     blotClient = Client(messageQueue, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
     return blotClient
 
