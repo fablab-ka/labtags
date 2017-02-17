@@ -15,14 +15,14 @@ class HttpListener(threading.Thread):
     def handleRequest(self, mac):
         if not mac:
             return 'ERROR: no mac given'
-        
+
         self.messageQueue.put(BeepTagCommandMessage(mac))
         return 'OK'
 
     def run(self):
         print(ANSI_BLUE + "[HttpListener] Starting on Port '" + str(Config.NotificationServiceUrl) + "'" + ANSI_OFF)
 
-        self.handleRequest = self.app.route("/<mac>")(lambda mac: self.handleRequest(mac))
+        self.app.route("/<mac>")(lambda mac: self.handleRequest(mac))
         self.app.run(port=Config.NotificationServiceUrl)
 
         print(ANSI_BLUE + "[HttpListener] Shutting down" + ANSI_OFF)
