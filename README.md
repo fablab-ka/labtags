@@ -24,3 +24,10 @@ Bluetooth iTag utilities
 
 # Server Commands
 * Send message (gateway_mac, gateway_ip, msg)
+
+
+# setup
+wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
+unzip ngrok-stable-linux-arm.zip
+rm ngrok-stable-linux-arm.zip
+sudo mv ngrok /usr/bin/ngrok

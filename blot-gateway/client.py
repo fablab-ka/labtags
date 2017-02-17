@@ -1,6 +1,7 @@
 import requests
 from messages import ConnectToTagCommandMessage, BeepTagCommandMessage, COMMAND_CONNECT_TAG, COMMAND_BEEP_TAG
 from utils import ANSI_YELLOW, ANSI_OFF
+from config import Config
 
 class Client:
     def __init__(self, messageQueue, serverUrl, gateway_mac, gateway_ip):
@@ -48,9 +49,16 @@ class Client:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[Client] sendMessage" + str(message) + ANSI_OFF)
 
-        url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
-        print(ANSI_YELLOW + "[Client] GET " + url + ANSI_OFF)
-        res = requests.get(url)
+        if Config.UseGetRequests:
+            url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
+            print(ANSI_YELLOW + "[Client] GET " + url + ANSI_OFF)
+            res = requests.get(url)
+        else:
+            url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
+            print(ANSI_YELLOW + "[Client] GET " + url + ANSI_OFF)
+            res = requests.get(url)
+
+
         print(ANSI_YELLOW + "[Client] Response: %s '%s'" % (res.status_code, res.text) + ANSI_OFF)
 
         if res.text == "" or res.text == "OK":

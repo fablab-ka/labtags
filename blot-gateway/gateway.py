@@ -8,8 +8,8 @@ from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
 from uuid import getnode as get_mac
-import socket
 from tagcache import TagCache
+from config import Config
 
 class WorkerThread(threading.Thread):
 
@@ -92,7 +92,7 @@ def createBlotClient(messageQueue):
     ip = s.getsockname()[0]
     s.close()
 
-    blotClient = Client(messageQueue, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
+    blotClient = Client(messageQueue, Config.ServerUrl, mac_str, ip)
     return blotClient
 
 def runGateway():
