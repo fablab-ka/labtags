@@ -1,4 +1,4 @@
-import threading, time, binascii
+import threading, time, binascii, traceback
 from bluepy import btle
 from messages import TagConnectedMessage, TagDisconnectedMessage, TagNotificationMessage
 #from messages import *
@@ -141,6 +141,8 @@ class TagConnectionThread(threading.Thread):
             else:
                 print(ANSI_GREEN + "[TagConnectionThread] Error!" + str(e.message) + ANSI_OFF)
                 raise e
+        except:
+            print(ANSI_GREEN + "[TagConnectionThread] " + str(traceback.format_exc()) + ANSI_OFF)
         finally:
             self.isDead = True
 
