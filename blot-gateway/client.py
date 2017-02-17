@@ -64,4 +64,7 @@ class Client:
         if res.text == "" or res.text == "OK":
             print(ANSI_YELLOW + "[Client] No Command response" + ANSI_OFF)
         else:
-            self.handleResponse(res.json())
+            try:
+                self.handleResponse(res.json())
+            except:
+                print(ANSI_YELLOW + "[Client] Broken Server response '" + str(res.text) + "'" + ANSI_OFF)
