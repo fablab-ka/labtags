@@ -22,12 +22,11 @@ import sensortag
                 
 class TagConnectionThread(threading.Thread):
 
-    def __init__(self, messageQueue, queueLock, tag):
+    def __init__(self, messageQueue, tag):
         threading.Thread.__init__(self)
 
         #btle.Debugging = True
         self.messageQueue = messageQueue
-        self.queueLock = queueLock
         self.tag = tag
         #self.name2 = name
         self.notificationTimeout = 1
@@ -127,9 +126,7 @@ class TagConnectionThread(threading.Thread):
                 if self.peripheral.waitForNotifications(self.notificationTimeout):
                     print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.tag.mac + "'" + ANSI_OFF)
 
-                    self.queueLock.acquire()
-                    self.messageQueue.put(TagNotificationMessage(self.tag.mac, "press"))
-                    self.queueLock.release()
+                    self.messageQueue.put(TagNotificationMessage(self.tag, "press"))
 
                 if self.tag.mac == 'b0:b4:48:b8:7f:84' or self.tag.mac == 'b0:b4:48:b8:43:86':
                     print("Temp: ", self.peripheral.IRtemperature.read(), ' C')
@@ -146,9 +143,7 @@ class TagConnectionThread(threading.Thread):
             self.isDead = True
 
             if e.code == btle.BTLEException.DISCONNECTED:
-                self.queueLock.acquire()
-                self.messageQueue.put(TagDisconnectedMessage(self.tag.mac))
-                self.queueLock.release()
+                self.messageQueue.put(TagDisconnectedMessage(self.tag))
 
                 print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.tag.mac + "' was disconnected." + ANSI_OFF)
             else:

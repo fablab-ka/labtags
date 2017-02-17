@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys, threading, time, socket
-from Queue import Queue
+from messagequeue import MessageQueue
 from client import Client
 from messages import *
 from tagconnection import TagConnectionThread
@@ -13,11 +13,10 @@ from tagcache import TagCache
 
 class WorkerThread(threading.Thread):
 
-    def __init__(self, messageQueue, queueLock, blotClient, tagCache):
+    def __init__(self, messageQueue, blotClient, tagCache):
         threading.Thread.__init__(self)
 
         self.messageQueue = messageQueue
-        self.queueLock = queueLock
         self.blotClient = blotClient
         self.tagCache = tagCache
         self.tagConnections = []
@@ -27,48 +26,48 @@ class WorkerThread(threading.Thread):
             if conn.isDead:
                 self.tagConnections.remove(conn)
 
-    def hasElements(self):
-        self.queueLock.acquire()
-        hasElements = self.messageQueue.empty()
-        self.queueLock.release()
-        return hasElements
+    def handleConnectToTagMessage(self, message):
+        if list_contains(self.tagConnections, lambda t: t.mac == message.mac):
+            print(ANSI_CYAN + "[WorkerThread] Connection to Tag '" + message.mac + "' already established" + ANSI_OFF)
+            return
 
-    def handleMessageQueue(self):
-        while not self.hasElements():
-            self.queueLock.acquire()
+        tag = self.tagCache.findByMac(message.mac)
+        if not tag:
+            print(ANSI_CYAN + "[WorkerThread] no Tag with that mac found (" + str(message.mac) + ")" + ANSI_OFF)
+            return
+
+        tagConnection = TagConnectionThread(self.messageQueue, tag)
+        self.tagConnections.append(tagConnection)
+
+        print(ANSI_CYAN + "[WorkerThread] starting new tag connection thread" + ANSI_OFF)
+        tagConnection.daemon = True
+        tagConnection.start()
+        print(ANSI_CYAN + "[WorkerThread] started new tag connection thread" + ANSI_OFF)
+
+    def handleBeepTagMessage(self, message):
+        conn = list_find(self.tagConnections, lambda t: t.mac == message.mac)
+        if conn:
+            conn.triggerBeep()
+        else:
+            print(ANSI_CYAN + "[WorkerThread] Tag '" + message.mac + "' is not yet connected (no connection found)" + ANSI_OFF)
+
+    def processMessage(self, message):
+        if isinstance(message, ClientMessage):
+            self.blotClient.sendMessage(message)
+        elif isinstance(message, ConnectToTagCommandMessage):
+            self.handleConnectToTagMessage(message)
+        elif isinstance(message, BeepTagCommandMessage):
+            self.handleBeepTagMessage(message)
+        else:
+            print(ANSI_CYAN + "[WorkerThread] Error: unknown message type " + str(message) + ANSI_OFF)
+
+    def processMessageQueue(self):
+        while not self.messageQueue.empty():
             message = self.messageQueue.get()
-            self.queueLock.release()
 
             print(ANSI_CYAN + "[WorkerThread] processing message " + str(message) + ANSI_OFF)
 
-            if isinstance(message, DiscoverTagMessage) or isinstance(message, TagConnectedMessage) or isinstance(message, TagDisconnectedMessage) or isinstance(message, TagNotificationMessage):
-                self.blotClient.sendMessage(message)
-            elif isinstance(message, ConnectToTagCommandMessage):
-                if list_contains(self.tagConnections, lambda t: t.mac == message.mac):
-                    print(ANSI_CYAN + "[WorkerThread] Connection to Tag '" + message.mac + "' already established" + ANSI_OFF)
-                    continue
-
-                tag = self.tagCache.findByMac(message.mac)
-                if not tag:
-                    print(ANSI_CYAN + "[WorkerThread] no Tag with that mac found (" + str(message.mac) + ")" + ANSI_OFF)
-                    continue
-
-                tagConnection = TagConnectionThread(self.messageQueue, self.queueLock, tag)
-                self.tagConnections.append(tagConnection)
-
-                print(ANSI_CYAN + "[WorkerThread] starting new tag connection thread" + ANSI_OFF)
-                tagConnection.daemon = True
-                tagConnection.start()
-                #print(ANSI_CYAN + "[WorkerThread] started new tag connection thread" + ANSI_OFF)
-            elif isinstance(message, BeepTagCommandMessage):
-                conn = list_find(self.tagConnections, lambda t: t.mac == message.mac)
-                if conn:
-                    conn.triggerBeep()
-                else:
-                    print(ANSI_CYAN + "[WorkerThread] Tag '" + message.mac + "' is not yet connected (no connection found)" + ANSI_OFF)
-            else:
-                print(ANSI_CYAN + "[WorkerThread] Error: unknown message type " + str(message) + ANSI_OFF)
-
+            self.processMessage(message)
 
     def run(self):
         print(ANSI_CYAN + "[WorkerThread] Worker loop start" + ANSI_OFF)
@@ -78,32 +77,34 @@ class WorkerThread(threading.Thread):
 
             self.pruneTagConnections()
 
-            self.handleMessageQueue()
+            self.processMessageQueue()
 
             time.sleep(0.3)
         print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF)
 
-
-if __name__ == "__main__":
-    print("Starting BlOT Gateway")
-
-    queueLock = threading.Lock()
-    messageQueue = Queue()
+def createBlotClient():
     mac = get_mac()
     mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
+    ip = socket.gethostbyname(socket.getfqdn())
 
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("gmail.com",80))
     ip = s.getsockname()[0]
     s.close()
 
-    blotClient = Client(messageQueue, queueLock, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
+    blotClient = Client(messageQueue, 'http://homeserver.spdns.org/blot.php', mac_str, ip)
+    return blotClient
 
+def runGateway():
+    print("Starting BlOT Gateway")
+
+    messageQueue = MessageQueue()
+    blotClient = createBlotClient()
     tagCache = TagCache()
 
     threads = [
-        ScanLoopThread(messageQueue, queueLock, tagCache),
-        WorkerThread(messageQueue, queueLock, blotClient, tagCache)
+        ScanLoopThread(messageQueue, tagCache),
+        WorkerThread(messageQueue, blotClient, tagCache)
     ]
 
     for thread in threads:
@@ -116,3 +117,6 @@ if __name__ == "__main__":
         print '\n! Received keyboard interrupt, quitting threads.\n'
 
     print "Gateway Shutdown"
+
+if __name__ == "__main__":
+    runGateway()
