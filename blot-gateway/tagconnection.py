@@ -118,8 +118,6 @@ class TagConnectionThread(threading.Thread):
                     self.setBeepCharacteristicValue(True)
                     time.sleep(1)
                     self.setBeepCharacteristicValue(False)
-                else:
-                    print(ANSI_GREEN + "[TagConnectionThread] no beep for '" + self.tag.mac + "'" + ANSI_OFF)
 
                 if self.peripheral.waitForNotifications(self.notificationTimeout):
                     print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.tag.mac + "'" + ANSI_OFF)
