@@ -136,17 +136,16 @@ class TagConnectionThread(threading.Thread):
                 else:
                     time.sleep(0.1)
         except btle.BTLEException as e:
-            self.isDead = True
-
             if e.code == btle.BTLEException.DISCONNECTED:
                 print(ANSI_GREEN + "[TagConnectionThread] Device '" + self.tag.mac + "' was disconnected." + ANSI_OFF)
             else:
                 print(ANSI_GREEN + "[TagConnectionThread] Error!" + str(e.message) + ANSI_OFF)
                 raise e
         finally:
+            self.isDead = True
+
             self.peripheral.disconnect()
 
             self.messageQueue.put(TagDisconnectedMessage(self.tag))
 
         print(ANSI_GREEN + "[TagConnectionThread] connection loop shutdown" + ANSI_OFF)
-        self.isDead = True
