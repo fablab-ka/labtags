@@ -69,7 +69,7 @@ class ScanLoopThread(threading.Thread):
 
                 self.discoverTags()
             except:
-                print(ANSI_RED + "[ScanThread] " + sys.exec_info()[0] + ANSI_OFF)
+                print(ANSI_RED + "[ScanThread] " + sys.exc_info()[0] + ANSI_OFF)
 
             time.sleep(0.1)
 
