@@ -1,5 +1,5 @@
 import requests
-from messages import ConnectToTagCommandMessage, BeepTagCommandMessage, COMMAND_CONNECT_TAG, COMMAND_BEEP_TAG
+from messages import TagNotificationMessage, ConnectToTagCommandMessage, BeepTagCommandMessage, COMMAND_CONNECT_TAG, COMMAND_BEEP_TAG
 from utils import ANSI_YELLOW, ANSI_OFF
 from config import Config
 
@@ -49,7 +49,7 @@ class Client:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[Client] sendMessage" + str(message) + ANSI_OFF)
 
-        if Config.IFTTTUrlTemplate:
+        if isinstance(message, TagNotificationMessage) and Config.IFTTTUrlTemplate:
             url = Config.IFTTTUrlTemplate % (message.tag.mac)
             print(ANSI_YELLOW + "[Client] IFTTT GET " + url + ANSI_OFF)
             iftttRes = requests.get(url)
