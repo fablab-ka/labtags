@@ -34,7 +34,7 @@ class TagConnectionThread(threading.Thread):
         self.beepWasTriggered = False
 
     def triggerBeep(self):
-        print(ANSI_GREEN + "[TagConnectionThread] triggerBeep" + ANSI_OFF)
+        print(ANSI_GREEN + "[TagConnectionThread] triggerBeep '" + self.tag.mac + "'" + ANSI_OFF)
 
         if self.isDead:
             print(ANSI_GREEN + "[TagConnectionThread] Error! Connection already dead" + ANSI_OFF)
@@ -118,6 +118,8 @@ class TagConnectionThread(threading.Thread):
                     self.setBeepCharacteristicValue(True)
                     time.sleep(1)
                     self.setBeepCharacteristicValue(False)
+                else:
+                    print(ANSI_GREEN + "[TagConnectionThread] no beep for '" + self.tag.mac + "'" + ANSI_OFF)
 
                 if self.peripheral.waitForNotifications(self.notificationTimeout):
                     print(ANSI_GREEN + "[TagConnectionThread] received notification from '" + self.tag.mac + "'" + ANSI_OFF)
