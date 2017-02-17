@@ -1,8 +1,25 @@
 import threading, time, binascii
 from bluepy import btle
-from messages import TagDisconnectedMessage, TagNotificationMessage
-from utils import ANSI_GREEN, ANSI_OFF
+from messages import TagConnectedMessage, TagDisconnectedMessage, TagNotificationMessage
+#from messages import *
+from utils import ANSI_GREEN, ANSI_WHITE, ANSI_OFF
+from bluepy.btle import UUID, Peripheral, DefaultDelegate, AssignedNumbers
 
+#import time
+#https://smidgeonpigeon.wordpress.com/2015/07/21/raspberry-pi-2-ble-ti-sensor-tag/
+import sensortag
+
+#class BeSensorTag(Peripheral):
+#    def __init__(self,addr):
+#        Peripheral.__init__(self,addr)
+#        svcs = self.discoverServices()
+#        self.disconnect()
+#        if _TI_UUID(0xAA70) in svcs:
+#            return 1
+#        else:
+#            return 0
+               
+                
 class TagConnectionThread(threading.Thread):
 
     def __init__(self, messageQueue, tag):
@@ -11,6 +28,7 @@ class TagConnectionThread(threading.Thread):
         #btle.Debugging = True
         self.messageQueue = messageQueue
         self.tag = tag
+        #self.name2 = name
         self.notificationTimeout = 1
         self.isDead = False
         self.peripheral = None
@@ -68,9 +86,32 @@ class TagConnectionThread(threading.Thread):
     def run(self):
         print(ANSI_GREEN + "[TagConnectionThread] connection loop start, connecting to: {}".format(self.tag.mac) + ANSI_OFF)
 
-        self.peripheral = btle.Peripheral(self.tag.mac, btle.ADDR_TYPE_PUBLIC)
+        
+        #self.peripheral.__init__(self,self.mac)
+        #svcs = self.peripheral.discoverServices()
+        #if _TI_UUID(0xAA70) in svcs:
+        if self.mac == 'b0:b4:48:b8:7f:84' or self.mac == 'b0:b4:48:b8:43:86':
+            #senstag = 1
+            print(ANSI_WHITE + "------------ SensorTag {} -------------".format(self.mac) + ANSI_OFF)
+            self.peripheral = sensortag.SensorTag(self.mac)
+            self.peripheral.IRtemperature.enable()
+            self.peripheral.humidity.enable()
+            self.peripheral.barometer.enable()
+            self.peripheral.accelerometer.enable()
+            self.peripheral.magnetometer.enable()
+            self.peripheral.gyroscope.enable()
+            self.peripheral.keypress.enable()
+            self.peripheral.lightmeter.enable()
+        else:
+            print(ANSI_WHITE + "------------ iTag {} -------------".format(self.mac) + ANSI_OFF)
+            self.peripheral = btle.Peripheral(self.tag.mac, btle.ADDR_TYPE_PUBLIC)
+        
 
         print(ANSI_GREEN + "[TagConnectionThread] Tag '{}' connected successfully".format(self.tag.mac) + ANSI_OFF)
+
+        self.queueLock.acquire()
+        self.messageQueue.put(TagConnectedMessage(self.tag.mac))
+        self.queueLock.release()
 
         try:
             while True:
@@ -87,7 +128,17 @@ class TagConnectionThread(threading.Thread):
 
                     self.messageQueue.put(TagNotificationMessage(self.tag, "press"))
 
-                time.sleep(0.1)
+                if self.tag.mac == 'b0:b4:48:b8:7f:84' or self.tag.mac == 'b0:b4:48:b8:43:86':
+                    print("Temp: ", self.peripheral.IRtemperature.read(), ' C')
+                    print("Humidity: ", self.peripheral.humidity.read(),  ' Hrel')
+                    print("Barometer: ", self.peripheral.barometer.read())
+                    print("Accelerometer: ", self.peripheral.accelerometer.read())
+                    print("Magnetometer: ", self.peripheral.magnetometer.read() , " uT")
+                    print("Gyroscope: ", self.peripheral.gyroscope.read())
+                    print("Light: ", self.peripheral.lightmeter.read())
+                    time.sleep(5.0)
+                else:
+                    time.sleep(0.1)
         except btle.BTLEException as e:
             self.isDead = True
 

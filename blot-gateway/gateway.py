@@ -8,6 +8,7 @@ from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
 from uuid import getnode as get_mac
+import socket
 from tagcache import TagCache
 
 class WorkerThread(threading.Thread):
@@ -68,7 +69,6 @@ class WorkerThread(threading.Thread):
 
             self.processMessage(message)
 
-
     def run(self):
         print(ANSI_CYAN + "[WorkerThread] Worker loop start" + ANSI_OFF)
 
@@ -83,6 +83,12 @@ class WorkerThread(threading.Thread):
         print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF)
 
 def createBlotClient():
+
+    #s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #s.connect(("gmail.com",80))
+    #ip = s.getsockname()[0]
+    #s.close()
+
     mac = get_mac()
     mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
     ip = socket.gethostbyname(socket.getfqdn())
