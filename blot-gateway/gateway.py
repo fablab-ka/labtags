@@ -9,6 +9,7 @@ from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
 from uuid import getnode as get_mac
 from tagcache import TagCache
+from httplistener import HttpListener
 from config import Config
 
 class WorkerThread(threading.Thread):
@@ -104,7 +105,8 @@ def runGateway():
 
     threads = [
         ScanLoopThread(messageQueue, tagCache),
-        WorkerThread(messageQueue, blotClient, tagCache)
+        WorkerThread(messageQueue, blotClient, tagCache),
+        HttpListener(messageQueue, tagCache)
     ]
 
     for thread in threads:
