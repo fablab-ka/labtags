@@ -30,8 +30,8 @@ class DiscoverTagMessage(ClientMessage):
             gateway_mac,
             gateway_ip,
             self.time,
-            self.tag.rssi,
-            self.tag.name
+            self.tag.name,
+            self.tag.rssi
         )
 
 class TagConnectedMessage(ClientMessage):

@@ -27,7 +27,13 @@ Bluetooth iTag utilities
 
 
 # setup
+install ngrok (https://ngrok.com/)
+
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
 unzip ngrok-stable-linux-arm.zip
 rm ngrok-stable-linux-arm.zip
 sudo mv ngrok /usr/bin/ngrok
+
+signup at https://ngrok.com/
+configure ngrok authtoken with:
+```ngrok <authToken>```
