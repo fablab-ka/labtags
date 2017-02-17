@@ -46,7 +46,7 @@ class WorkerThread(threading.Thread):
         print(ANSI_CYAN + "[WorkerThread] started new tag connection thread" + ANSI_OFF)
 
     def handleBeepTagMessage(self, message):
-        conn = list_find(self.tagConnections, lambda t: t.mac == message.mac)
+        conn = list_find(self.tagConnections, lambda t: t.tag.mac == message.mac)
         if conn:
             conn.triggerBeep()
         else:
