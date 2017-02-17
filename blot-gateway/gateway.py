@@ -82,7 +82,7 @@ class WorkerThread(threading.Thread):
             time.sleep(0.3)
         print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF)
 
-def createBlotClient():
+def createBlotClient(messageQueue):
     mac = get_mac()
     mac_str = ':'.join(("%012X" % mac)[i:i+2] for i in range(0, 12, 2))
     ip = socket.gethostbyname(socket.getfqdn())
@@ -99,7 +99,7 @@ def runGateway():
     print("Starting BlOT Gateway")
 
     messageQueue = MessageQueue()
-    blotClient = createBlotClient()
+    blotClient = createBlotClient(messageQueue)
     tagCache = TagCache()
 
     threads = [
