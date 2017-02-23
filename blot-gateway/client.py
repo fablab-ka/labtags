@@ -49,12 +49,12 @@ class Client:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[Client] sendMessage" + str(message) + ANSI_OFF)
 
-        if isinstance(message, TagNotificationMessage) and Config.IFTTTUrlTemplate:
-            url = Config.IFTTTUrlTemplate % (message.tag.mac)
-            print(ANSI_YELLOW + "[Client] IFTTT GET " + url + ANSI_OFF)
-            iftttRes = requests.get(url)
-
-            print(ANSI_YELLOW + "[Client] IFTTT Response: %s '%s'" % (iftttRes.status_code, iftttRes.text) + ANSI_OFF)
+        #if isinstance(message, TagNotificationMessage) and Config.IFTTTUrlTemplate:
+        #    url = Config.IFTTTUrlTemplate % (message.tag.mac)
+        #    print(ANSI_YELLOW + "[Client] IFTTT GET " + url + ANSI_OFF)
+        #    iftttRes = requests.get(url)
+        #
+        #    print(ANSI_YELLOW + "[Client] IFTTT Response: %s '%s'" % (iftttRes.status_code, iftttRes.text) + ANSI_OFF)
 
         if Config.UseGetRequests:
             url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)

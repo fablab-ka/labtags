@@ -723,8 +723,9 @@ if __name__ == '__main__':
         for svc in conn.services:
             print(str(svc), ":")
             for ch in svc.getCharacteristics():
-                print("    {}, hnd={}, supports {}".format(ch, hex(ch.handle), ch.propertiesToString()))
-                chName = AssignedNumbers.getCommonName(ch.uuid)
+                print("    -{}-, hnd={}, supports {}".format(ch, hex(ch.handle), ch.propertiesToString()))
+                #chName = AssignedNumbers.getCommonName(ch.uuid)
+                #print("    {}".chName)
                 if (ch.supportsRead()):
                     try:
                         print("    ->", repr(ch.read()))

@@ -3,7 +3,7 @@
 import sys, threading, time, socket
 from messagequeue import MessageQueue
 from client import Client
-from messages import *
+from messages import * #GWStartupMessage, GWShutdownMessage
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
@@ -21,6 +21,8 @@ class WorkerThread(threading.Thread):
         self.blotClient = blotClient
         self.tagCache = tagCache
         self.tagConnections = []
+        #self.threadsRunning = threadsRunning
+        self.messageQueue.put(GWStartupMessage()) #todo
 
     def pruneTagConnections(self):
         for conn in self.tagConnections[:]:
@@ -55,12 +57,25 @@ class WorkerThread(threading.Thread):
     def processMessage(self, message):
         if isinstance(message, ClientMessage):
             self.blotClient.sendMessage(message)
+        elif isinstance(message, GWStartupMessage): #GW start
+            self.blotClient.sendMessage(message)
+        elif isinstance(message, GWShutdownMessage): #GW stop
+            self.blotClient.sendMessage(message)
+        elif isinstance(message, SensorTagMessage): #sensortag
+            self.blotClient.sendMessage(message)
+        elif isinstance(message, TagUpdateMessage): #tag update
+            self.blotClient.sendMessage(message)
         elif isinstance(message, ConnectToTagCommandMessage):
             self.handleConnectToTagMessage(message)
         elif isinstance(message, BeepTagCommandMessage):
             self.handleBeepTagMessage(message)
         else:
             print(ANSI_CYAN + "[WorkerThread] Error: unknown message type " + str(message) + ANSI_OFF)
+
+
+        #if isinstance(message, Message):
+        #    self.blotClient.sendMessage(message)
+
 
     def processMessageQueue(self):
         while not self.messageQueue.empty():
@@ -75,13 +90,10 @@ class WorkerThread(threading.Thread):
 
         while True:
             #print(ANSI_CYAN + "[WorkerThread] .") # debu + ANSI_OFFg
-
             self.pruneTagConnections()
-
             self.processMessageQueue()
-
             time.sleep(0.3)
-        print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF)
+        print(ANSI_CYAN + "[WorkerThread] Worker loop shutdown" + ANSI_OFF) #ralf - nie gesehen
 
 def createBlotClient(messageQueue):
     mac = get_mac()
@@ -97,12 +109,13 @@ def createBlotClient(messageQueue):
     return blotClient
 
 def runGateway():
-    print("Starting BlOT Gateway")
-
+    print("Starting BluetoothLowEnergy of Things (BLoT) Gateway  ")
     messageQueue = MessageQueue()
+
     blotClient = createBlotClient(messageQueue)
     tagCache = TagCache()
 
+    #threadsRunning = True
     threads = [
         ScanLoopThread(messageQueue, tagCache),
         WorkerThread(messageQueue, blotClient, tagCache),
@@ -110,15 +123,29 @@ def runGateway():
     ]
 
     for thread in threads:
-        thread.daemon = True
+        thread.daemon = True #False
         thread.start()
+
+    messageQueue.put(GWStartupMessage())
 
     try:
         while True: time.sleep(100)
     except (KeyboardInterrupt, SystemExit):
-        print '\n! Received keyboard interrupt, quitting threads.\n'
+        #threadsRunning = False
+        print '\n! Received keyboard interrupt, quitting threads.\n' #Ralf: wo werden die beendet ?
 
+    messageQueue.put(GWShutdownMessage()) #todo
     print "Gateway Shutdown"
 
 if __name__ == "__main__":
     runGateway()
+
+
+#todo
+# GW start / stop msg
+# RSSI aktuell
+# battery value update
+# Thread daemon false und kontrolliert beenden
+# msg fuer TI Sensor TAG daten an DB Server
+# schoenere Loesung fuer IP adresse
+# port 3333 belegt meldung
