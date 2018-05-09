@@ -1,14 +1,15 @@
 import requests
 from messages import TagNotificationMessage, ConnectToTagCommandMessage, BeepTagCommandMessage, COMMAND_CONNECT_TAG, COMMAND_BEEP_TAG
 from utils import ANSI_YELLOW, ANSI_OFF
-from config import Config
+from config import Config, ClientType
 
 class Client:
-    def __init__(self, messageQueue, serverUrl, gateway_mac, gateway_ip):
+    def __init__(self, messageQueue, clientUrl, gatewayMac, gatewayIp):
         self.messageQueue = messageQueue
-        self.serverUrl = serverUrl
-        self.gateway_mac = gateway_mac
-        self.gateway_ip = gateway_ip
+        self.clientUrl = clientUrl
+        self.gatewayMac = gatewayMac
+        self.gatewayIp = gatewayIp
+
 
     def handleConnectResponse(self, commandMessage):
         print(ANSI_YELLOW + "[Client] Received Connect Command for Tag '" + str(commandMessage["tag_mac"]) + "'" + ANSI_OFF)
@@ -49,15 +50,8 @@ class Client:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[Client] sendMessage" + str(message) + ANSI_OFF)
 
-        #if isinstance(message, TagNotificationMessage) and Config.IFTTTUrlTemplate:
-        #    url = Config.IFTTTUrlTemplate % (message.tag.mac)
-        #    print(ANSI_YELLOW + "[Client] IFTTT GET " + url + ANSI_OFF)
-        #    iftttRes = requests.get(url)
-        #
-        #    print(ANSI_YELLOW + "[Client] IFTTT Response: %s '%s'" % (iftttRes.status_code, iftttRes.text) + ANSI_OFF)
-
-        if Config.UseGetRequests:
-            url = self.serverUrl +  message.toUrlQuery(self.gateway_mac, self.gateway_ip)
+        if Config.ClientType = ClientType.MQTT:
+            url = self.clientUrl +  message.toUrlQuery(self.gatewayMac, self.gatewayIp)
             print(ANSI_YELLOW + "[Client] GET " + url + ANSI_OFF)
             res = requests.get(url)
 

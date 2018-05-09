@@ -26,7 +26,7 @@ Bluetooth iTag utilities
 * Send message (gateway_mac, gateway_ip, msg)
 
 
-# setup
+# setup for ifttt
 install ngrok (https://ngrok.com/)
 
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip

@@ -3,14 +3,15 @@
 import sys, threading, time, socket
 from messagequeue import MessageQueue
 from client import Client
-from messages import * #GWStartupMessage, GWShutdownMessage
+from mqttClient import MQTTClient
+from messages import *
 from tagconnection import TagConnectionThread
 from tagscanner import ScanLoopThread
 from utils import ANSI_CYAN, ANSI_OFF, list_contains, list_find
 from uuid import getnode as get_mac
 from tagcache import TagCache
 from httplistener import HttpListener
-from config import Config
+from config import Config, ClientType
 
 class WorkerThread(threading.Thread):
 
@@ -21,8 +22,7 @@ class WorkerThread(threading.Thread):
         self.blotClient = blotClient
         self.tagCache = tagCache
         self.tagConnections = []
-        #self.threadsRunning = threadsRunning
-        self.messageQueue.put(GWStartupMessage()) #todo
+        self.messageQueue.put(GWStartupMessage())
 
     def pruneTagConnections(self):
         for conn in self.tagConnections[:]:
@@ -101,11 +101,15 @@ def createBlotClient(messageQueue):
     ip = socket.gethostbyname(socket.getfqdn())
 
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("gmail.com",80))
+    s.connect((Config.IPTestUrl, 80))
     ip = s.getsockname()[0]
     s.close()
 
-    blotClient = Client(messageQueue, Config.ServerUrl, mac_str, ip)
+    if Config.ClientType == ClientType.GetRequest:
+        blotClient = Client(messageQueue, Config.ClientUrl, mac_str, ip)
+    elif:
+        blotClient = MQTTClient(messageQueue, Config.ClientUrl, mac_str, ip)
+
     return blotClient
 
 def runGateway():
@@ -115,7 +119,6 @@ def runGateway():
     blotClient = createBlotClient(messageQueue)
     tagCache = TagCache()
 
-    #threadsRunning = True
     threads = [
         ScanLoopThread(messageQueue, tagCache),
         WorkerThread(messageQueue, blotClient, tagCache),
@@ -131,7 +134,6 @@ def runGateway():
     try:
         while True: time.sleep(100)
     except (KeyboardInterrupt, SystemExit):
-        #threadsRunning = False
         print '\n! Received keyboard interrupt, quitting threads.\n' #Ralf: wo werden die beendet ?
 
     messageQueue.put(GWShutdownMessage()) #todo

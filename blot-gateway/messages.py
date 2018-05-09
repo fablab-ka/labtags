@@ -8,7 +8,7 @@ class Message:
     def __init__(self):
         self.queryTemplate = "?action=%s&gateway_mac=%s&gateway_ip=%s&time=%d"
 
-    def toUrlQuery():
+    def toUrlQuery(self):
         return ""
 
 #ralf: added
@@ -39,7 +39,6 @@ class GWStartupMessage(Message):
             self.time
         )
 
-#ralf: um &tag_rssi=%s&tag_battlvl=%s erweitert
 class ClientMessage(Message):
     def __init__(self, tag):
         Message.__init__(self)
@@ -122,7 +121,7 @@ class TagUpdateMessage(ClientMessage):
             self.tag.rssi, #send new value to DB
             self.tag.battlvl #send new value to DB
         )
-        
+
 class TagNotificationMessage(ClientMessage):
     def __init__(self, tag, type):
         ClientMessage.__init__(self, tag)
@@ -148,7 +147,7 @@ class TagNotificationMessage(ClientMessage):
 
 class SensorTagMessage(ClientMessage):
     def __init__(self, tag):
-        ClientMessage.__init__(self, tag, sensorTAG)
+        ClientMessage.__init__(self, tag)
 
         self.tag = tag
         self.time = time.time()
@@ -164,7 +163,7 @@ class SensorTagMessage(ClientMessage):
             self.tag.rssi,
             self.tag.battlvl
         )
-		
+
 class ConnectToTagCommandMessage(Message):
     def __init__(self, mac):
         Message.__init__(self)
