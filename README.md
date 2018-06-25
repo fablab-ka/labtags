@@ -40,3 +40,9 @@ configure ngrok authtoken with:
 
 cp blot_gateway /etc/init.d/blot_gateway
 append ```/etc/init.d/blot_gateway start``` to /etc/rc.local
+
+# Troubleshooting
+
+## OSError: [Errno 8] Exec format error
+
+```sudo apt-get install build-essential libglib2.0-dev```
