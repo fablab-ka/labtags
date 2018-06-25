@@ -50,7 +50,7 @@ class Client:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[Client] sendMessage" + str(message) + ANSI_OFF)
 
-        if Config.ClientType = ClientType.MQTT:
+        if Config.ClientType == ClientType.MQTT:
             url = self.clientUrl +  message.toUrlQuery(self.gatewayMac, self.gatewayIp)
             print(ANSI_YELLOW + "[Client] GET " + url + ANSI_OFF)
             res = requests.get(url)

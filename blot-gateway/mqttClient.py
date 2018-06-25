@@ -2,6 +2,8 @@ import paho.mqtt.client as mqtt
 from messages import TagNotificationMessage, ConnectToTagCommandMessage, BeepTagCommandMessage, COMMAND_CONNECT_TAG, COMMAND_BEEP_TAG
 from utils import ANSI_YELLOW, ANSI_OFF
 
+from config import Config, ClientType
+
 class MQTTClient:
     def __init__(self, messageQueue, clientUrl, gatewayMac, gatewayIp):
         self.messageQueue = messageQueue
@@ -65,7 +67,7 @@ class MQTTClient:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[MQTTClient] sendMessage" + str(message) + ANSI_OFF)
 
-        if Config.ClientType = ClientType.GetRequest:
+        if Config.ClientType == ClientType.GetRequest:
             url = self.clientUrl + \
                 message.toUrlQuery(self.gatewayMac, self.gatewayIp)
             print(ANSI_YELLOW + "[MQTTClient] GET " + url + ANSI_OFF)
@@ -74,11 +76,11 @@ class MQTTClient:
             print(ANSI_YELLOW + "[MQTTClient] Response: %s '%s'" %
                   (res.status_code, res.text) + ANSI_OFF)
 
-        if res.text == "" or res.text == "OK":
-            print(ANSI_YELLOW + "[MQTTClient] No Command response" + ANSI_OFF)
-        else:
-            try:
-                self.handleResponse(res.json())
-            except:
-                print(
-                    ANSI_YELLOW + "[MQTTClient] Broken Server response '" + str(res.text) + "'" + ANSI_OFF)
+            if res.text == "" or res.text == "OK":
+                print(ANSI_YELLOW + "[MQTTClient] No Command response" + ANSI_OFF)
+            else:
+                try:
+                    self.handleResponse(res.json())
+                except:
+                    print(
+                        ANSI_YELLOW + "[MQTTClient] Broken Server response '" + str(res.text) + "'" + ANSI_OFF)

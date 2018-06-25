@@ -204,7 +204,7 @@ class Descriptor:
 
     def __str__(self):
         return "Descriptor <%s>" % self.uuid.getCommonName()
-        
+
 
     def read(self):
         return self.peripheral.readCharacteristic(self.handle)
@@ -235,6 +235,7 @@ class BluepyHelper:
 
     def _startHelper(self,iface=None):
         if self._helper is None:
+            print(helperExe)
             DBG("Running ", helperExe)
             self._stderr = open(os.devnull, "w")
             args=[helperExe]
@@ -562,7 +563,7 @@ class ScanEntry:
         self.connectable = ((resp['flag'][0] & 0x4) == 0)
         data = resp.get('d', [''])[0]
         self.rawData = data
-        
+
         # Note: bluez is notifying devices twice: once with advertisement data,
         # then with scan response data. Also, the device may update the
         # advertisement or scan data
@@ -577,7 +578,7 @@ class ScanEntry:
 
         self.updateCount += 1
         return isNewData
-        
+
     def getDescription(self, sdid):
         return self.dataTags.get(sdid, hex(sdid))
 
@@ -594,14 +595,14 @@ class ScanEntry:
         '''Returns list of tuples [(tag, description, value)]'''
         return [ (sdid, self.getDescription(sdid), self.getValueText(sdid))
                     for sdid in self.scanData.keys() ]
-         
- 
+
+
 class Scanner(BluepyHelper):
     def __init__(self,iface=0):
         BluepyHelper.__init__(self)
         self.scanned = {}
         self.iface=iface
-    
+
     def start(self):
         self._startHelper(iface=self.iface)
         self._mgmtCmd("le on")
@@ -631,7 +632,7 @@ class Scanner(BluepyHelper):
         while True:
             if timeout:
                 remain = start + timeout - time.time()
-                if remain <= 0.0: 
+                if remain <= 0.0:
                     break
             else:
                 remain = None
@@ -657,7 +658,7 @@ class Scanner(BluepyHelper):
                 isNewData = dev._update(resp)
                 if self.delegate is not None:
                     self.delegate.handleDiscovery(dev, (dev.updateCount <= 1), isNewData)
-                 
+
             else:
                 raise BTLEException(BTLEException.INTERNAL_ERROR, "Unexpected response: " + respType)
 

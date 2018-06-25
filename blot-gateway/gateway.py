@@ -107,7 +107,7 @@ def createBlotClient(messageQueue):
 
     if Config.ClientType == ClientType.GetRequest:
         blotClient = Client(messageQueue, Config.ClientUrl, mac_str, ip)
-    elif:
+    else:
         blotClient = MQTTClient(messageQueue, Config.ClientUrl, mac_str, ip)
 
     return blotClient
