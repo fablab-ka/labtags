@@ -15,9 +15,9 @@ class MQTTClient:
                                       protocol=mqtt.MQTTv31)
 
         try:
-            mqtt_errno = self.mqttClient.connect(
-                Config.ClientUrl, Config.MQTTPort, 60)
+            mqtt_errno = self.mqttClient.connect(Config.ClientUrl, Config.MQTTPort, 60)
             if mqtt_errno != 0:
+                print((ANSI_YELLOW + "[MQTTClient] MQTT client failed to connect: %s" + ANSI_OFF) % mqtt_errno)
                 raise Exception(mqtt.error_string(mqtt_errno))
 
             self.mqttClient.loop_start()
