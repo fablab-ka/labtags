@@ -79,12 +79,3 @@ class MQTTClient:
                                                                         )))
             except BaseException as e:
                 print((ANSI_YELLOW + "Error relaying message {%s} '%s'. Error: {%s}" + ANSI_OFF) % (payload, topic, e))
-
-            if res.text == "" or res.text == "OK":
-                print(ANSI_YELLOW + "[MQTTClient] No Command response" + ANSI_OFF)
-            else:
-                try:
-                    self.handleResponse(res.json())
-                except:
-                    print(
-                        ANSI_YELLOW + "[MQTTClient] Broken Server response '" + str(res.text) + "'" + ANSI_OFF)
