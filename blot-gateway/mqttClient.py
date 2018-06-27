@@ -69,7 +69,7 @@ class MQTTClient:
 
         if Config.ClientType == ClientType.MQTT:
             payload = message.toMQTTMessage()
-            topic = Config.MQTTPathTemplate % (message.tag.mac)
+            topic = message.toMQTTChannel()
 
             try:
                 result = self.mqttClient.publish(topic, payload)

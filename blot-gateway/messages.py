@@ -14,6 +14,9 @@ class Message:
     def toMQTTMessage(self):
         return ""
 
+    def toMQTTChannel(self):
+        return ""
+
 #ralf: added
 class GWShutdownMessage(Message):
     def __init__(self):
@@ -30,6 +33,9 @@ class GWShutdownMessage(Message):
 
     def toMQTTMessage(self):
         return "GATEWAY_SHUTDOWN"
+
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % ("gateway")
 
 #ralf: added
 class GWStartupMessage(Message):
@@ -48,6 +54,9 @@ class GWStartupMessage(Message):
     def toMQTTMessage(self):
         return "GATEWAY_STARTUP"
 
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % ("gateway")
+
 class ClientMessage(Message):
     def __init__(self, tag):
         Message.__init__(self)
@@ -55,6 +64,9 @@ class ClientMessage(Message):
 
     def toMQTTMessage(self):
         return ""
+
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % ("error")
 
 
 class DiscoverTagMessage(ClientMessage):
@@ -79,6 +91,9 @@ class DiscoverTagMessage(ClientMessage):
     def toMQTTMessage(self):
         return "TAG_DISCOVERED"
 
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % (self.tag.mac)
+
 class TagConnectedMessage(ClientMessage):
     def __init__(self, tag):
         ClientMessage.__init__(self, tag)
@@ -100,6 +115,9 @@ class TagConnectedMessage(ClientMessage):
 
     def toMQTTMessage(self):
         return "TAG_CONNECTED"
+
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % (self.tag.mac)
 
 class TagDisconnectedMessage(ClientMessage):
     def __init__(self, tag):
@@ -123,6 +141,9 @@ class TagDisconnectedMessage(ClientMessage):
     def toMQTTMessage(self):
         return "TAG_DISCONNECTED"
 
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % (self.tag.mac)
+
 #ralf: added
 class TagUpdateMessage(ClientMessage):
     def __init__(self, tag):
@@ -145,6 +166,9 @@ class TagUpdateMessage(ClientMessage):
 
     def toMQTTMessage(self):
         return "TAG_UPDATE"
+
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % (self.tag.mac)
 
 class TagNotificationMessage(ClientMessage):
     def __init__(self, tag, type):
@@ -172,6 +196,9 @@ class TagNotificationMessage(ClientMessage):
     def toMQTTMessage(self):
         return "TAG_NOTIFICATION"
 
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % (self.tag.mac)
+
 class SensorTagMessage(ClientMessage):
     def __init__(self, tag):
         ClientMessage.__init__(self, tag)
@@ -194,6 +221,9 @@ class SensorTagMessage(ClientMessage):
     def toMQTTMessage(self):
         return "SENSOR_TAG_UPDATE"
 
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % (self.tag.mac)
+
 class ConnectToTagCommandMessage(Message):
     def __init__(self, mac):
         Message.__init__(self)
@@ -205,6 +235,9 @@ class ConnectToTagCommandMessage(Message):
     def toMQTTMessage(self):
         return ""
 
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % ("cmd")
+
 class BeepTagCommandMessage(Message):
     def __init__(self, mac):
         Message.__init__(self)
@@ -215,3 +248,6 @@ class BeepTagCommandMessage(Message):
 
     def toMQTTMessage(self):
         return ""
+
+    def toMQTTChannel(self):
+        return Config.MQTTPathTemplate % ("cmd")
