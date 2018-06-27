@@ -11,6 +11,6 @@ class Config:
 
     MQTTPathTemplate = "/FLKA/itags/%s"
     MQTTClientId = "itag_bridge"
-    MQTTPort = 1880
+    MQTTPort = 1883
 
     IPTestUrl = "gmail.com"
