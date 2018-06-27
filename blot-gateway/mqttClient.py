@@ -16,7 +16,7 @@ class MQTTClient:
 
         try:
             mqtt_errno = self.mqttClient.connect(
-                Config.mqtt_broker, Config.mqtt_broker_port, 60)
+                Config.ClientUrl, Config.MQTTPort, 60)
             if mqtt_errno != 0:
                 raise Exception(mqtt.error_string(mqtt_errno))
         except BaseException as e:
