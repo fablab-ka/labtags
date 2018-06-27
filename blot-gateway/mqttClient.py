@@ -67,14 +67,19 @@ class MQTTClient:
     def sendMessage(self, message):
         print(ANSI_YELLOW + "[MQTTClient] sendMessage" + str(message) + ANSI_OFF)
 
-        if Config.ClientType == ClientType.GetRequest:
-            url = self.clientUrl + \
-                message.toUrlQuery(self.gatewayMac, self.gatewayIp)
-            print(ANSI_YELLOW + "[MQTTClient] GET " + url + ANSI_OFF)
-            res = requests.get(url)
+        if Config.ClientType == ClientType.MQTT:
 
-            print(ANSI_YELLOW + "[MQTTClient] Response: %s '%s'" %
-                  (res.status_code, res.text) + ANSI_OFF)
+            try:
+                payload = message.toMQTTMessage()
+                topic = Config.MQTTPathTemplate % (message.tag.mac)
+                result = self.mqttClient.publish(topic, payload)
+                if not (result[0] == mqtt.MQTT_ERR_SUCCESS):
+                    print((ANSI_YELLOW + "[MQTTClient] Error publishing message \"%s\" to topic \"%s\". Return code %s: %s" + ANSI_OFF) % (
+                        payload, topic, str(result[0]), mqtt.error_string(result[0]
+                                                                        )))
+            except BaseException as e:
+                print((ANSI_YELLOW + "Error relaying message {%s} '%s'. Error: {%s}" + ANSI_OFF) % (
+                    format(payload, '#2x'), topic, e))
 
             if res.text == "" or res.text == "OK":
                 print(ANSI_YELLOW + "[MQTTClient] No Command response" + ANSI_OFF)

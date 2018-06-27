@@ -235,7 +235,6 @@ class BluepyHelper:
 
     def _startHelper(self,iface=None):
         if self._helper is None:
-            print(helperExe)
             DBG("Running ", helperExe)
             self._stderr = open(os.devnull, "w")
             args=[helperExe]

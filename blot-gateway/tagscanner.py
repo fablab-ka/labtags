@@ -21,7 +21,7 @@ class TagScanner:
 
         for d in devices:
             if not d.connectable:
-                print(ANSI_RED + "[TagScanner] Device not connectable", d.addr + ANSI_OFF )
+                print(ANSI_RED + "[TagScanner] Device not connectable: " + str(d.addr) + ANSI_OFF)
                 continue
 
             #print(ANSI_RED + "[TagScanner] Tag found '%s' '%s' '%s'" % (d.addr, d.addrType, d.rssi) + ANSI_OFF)

@@ -11,6 +11,9 @@ class Message:
     def toUrlQuery(self):
         return ""
 
+    def toMQTTMessage(self):
+        return ""
+
 #ralf: added
 class GWShutdownMessage(Message):
     def __init__(self):
@@ -24,6 +27,9 @@ class GWShutdownMessage(Message):
             gateway_ip,
             self.time
         )
+
+    def toMQTTMessage(self):
+        return "GATEWAY_SHUTDOWN"
 
 #ralf: added
 class GWStartupMessage(Message):
@@ -39,10 +45,16 @@ class GWStartupMessage(Message):
             self.time
         )
 
+    def toMQTTMessage(self):
+        return "GATEWAY_STARTUP"
+
 class ClientMessage(Message):
     def __init__(self, tag):
         Message.__init__(self)
         self.queryTemplate += "&tag_mac=%s&tag_name=%s&tag_rssi=%s&tag_battlvl=%s"
+
+    def toMQTTMessage(self):
+        return ""
 
 
 class DiscoverTagMessage(ClientMessage):
@@ -64,6 +76,9 @@ class DiscoverTagMessage(ClientMessage):
             self.tag.battlvl
         )
 
+    def toMQTTMessage(self):
+        return "TAG_DISCOVERED"
+
 class TagConnectedMessage(ClientMessage):
     def __init__(self, tag):
         ClientMessage.__init__(self, tag)
@@ -82,6 +97,9 @@ class TagConnectedMessage(ClientMessage):
             self.tag.rssi,
             self.tag.battlvl
         )
+
+    def toMQTTMessage(self):
+        return "TAG_CONNECTED"
 
 class TagDisconnectedMessage(ClientMessage):
     def __init__(self, tag):
@@ -102,6 +120,9 @@ class TagDisconnectedMessage(ClientMessage):
             self.tag.battlvl
         )
 
+    def toMQTTMessage(self):
+        return "TAG_DISCONNECTED"
+
 #ralf: added
 class TagUpdateMessage(ClientMessage):
     def __init__(self, tag):
@@ -121,6 +142,9 @@ class TagUpdateMessage(ClientMessage):
             self.tag.rssi, #send new value to DB
             self.tag.battlvl #send new value to DB
         )
+
+    def toMQTTMessage(self):
+        return "TAG_UPDATE"
 
 class TagNotificationMessage(ClientMessage):
     def __init__(self, tag, type):
@@ -145,6 +169,9 @@ class TagNotificationMessage(ClientMessage):
             self.type
         )
 
+    def toMQTTMessage(self):
+        return "TAG_NOTIFICATION"
+
 class SensorTagMessage(ClientMessage):
     def __init__(self, tag):
         ClientMessage.__init__(self, tag)
@@ -164,6 +191,9 @@ class SensorTagMessage(ClientMessage):
             self.tag.battlvl
         )
 
+    def toMQTTMessage(self):
+        return "SENSOR_TAG_UPDATE"
+
 class ConnectToTagCommandMessage(Message):
     def __init__(self, mac):
         Message.__init__(self)
@@ -172,6 +202,9 @@ class ConnectToTagCommandMessage(Message):
     def toUrlQuery(self, gateway_mac, gateway_ip):
         raise "ERROR, CommandMessage can't be converted into url query"
 
+    def toMQTTMessage(self):
+        return ""
+
 class BeepTagCommandMessage(Message):
     def __init__(self, mac):
         Message.__init__(self)
@@ -179,3 +212,6 @@ class BeepTagCommandMessage(Message):
 
     def toUrlQuery(self, gateway_mac, gateway_ip):
         raise "ERROR, CommandMessage can't be converted into url query"
+
+    def toMQTTMessage(self):
+        return ""

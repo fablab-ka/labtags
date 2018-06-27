@@ -46,3 +46,16 @@ append ```/etc/init.d/blot_gateway start``` to /etc/rc.local
 ## OSError: [Errno 8] Exec format error
 
 ```sudo apt-get install build-essential libglib2.0-dev```
+
+
+## Failed to execute mgmt cmd 'le on'
+
+```sudo apt-get install python-pip libglib2.0-dev```
+
+also try running with sudo
+
+## debug bluetooth interface
+```
+sudo apt-get install bluez-hcidump
+hcidump -t
+```
