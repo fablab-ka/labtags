@@ -90,10 +90,10 @@ class DiscoverTagMessage(ClientMessage):
         )
 
     def toMQTTMessage(self):
-        return "TAG_DISCOVERED"
+        return "TAG_DISCOVERED|" + self.tag.mac
 
     def toMQTTChannel(self):
-        return Config.MQTTPathTemplate % (self.tag.mac)
+        return Config.MQTTPathTemplate % ("discovery")
 
 class TagConnectedMessage(ClientMessage):
     def __init__(self, tag):
