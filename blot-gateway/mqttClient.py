@@ -19,6 +19,8 @@ class MQTTClient:
                 Config.ClientUrl, Config.MQTTPort, 60)
             if mqtt_errno != 0:
                 raise Exception(mqtt.error_string(mqtt_errno))
+
+            self.mqttClient.loop_start()
         except BaseException as e:
             print((ANSI_YELLOW + "[MQTTClient] MQTT error: %s" + ANSI_OFF) % e)
 
