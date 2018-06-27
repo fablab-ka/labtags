@@ -1,4 +1,5 @@
 import time
+from config import Config, ClientType
 
 COMMAND_CONNECT_TAG = "CONNECT_TAG"
 COMMAND_BEEP_TAG = "BEEP_TAG"
