@@ -68,10 +68,10 @@ class MQTTClient:
         print(ANSI_YELLOW + "[MQTTClient] sendMessage" + str(message) + ANSI_OFF)
 
         if Config.ClientType == ClientType.MQTT:
+            payload = message.toMQTTMessage()
+            topic = Config.MQTTPathTemplate % (message.tag.mac)
 
             try:
-                payload = message.toMQTTMessage()
-                topic = Config.MQTTPathTemplate % (message.tag.mac)
                 result = self.mqttClient.publish(topic, payload)
                 if not (result[0] == mqtt.MQTT_ERR_SUCCESS):
                     print((ANSI_YELLOW + "[MQTTClient] Error publishing message \"%s\" to topic \"%s\". Return code %s: %s" + ANSI_OFF) % (
